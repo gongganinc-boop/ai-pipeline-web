@@ -1,0 +1,494 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>무인 카페 키오스크 데모</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+    :root {
+      --main-bg: #f8fafc;
+      --primary: #2962ff;
+      --secondary: #424242;
+      --accent: #ffd600;
+      --radius: 16px;
+      --shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: var(--main-bg);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+    header {
+      background: var(--primary);
+      color: #fff;
+      padding: 24px 0 16px 0;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+    header p {
+      margin: 4px 0 0 0;
+      font-size: 1.1rem;
+      letter-spacing: 0.5px;
+      color: #cfd8dc;
+    }
+    main {
+      max-width: 740px;
+      margin: 32px auto;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 32px 22px;
+    }
+    .categories {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .category-btn {
+      border: none;
+      padding: 10px 22px;
+      border-radius: 30px;
+      background: var(--secondary);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background .2s;
+      margin-bottom: 6px;
+    }
+    .category-btn.active {
+      background: var(--primary);
+      color: #ffd600;
+      box-shadow: 0 2px 6px rgba(41,98,255,0.14);
+    }
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: #f5f7fa;
+      border-radius: 12px;
+      padding: 18px 14px 16px 14px;
+      text-align: center;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      cursor: pointer;
+      position: relative;
+      transition: transform .14s;
+    }
+    .product-card:active { transform: scale(0.98); }
+    .product-card img {
+      width: 70px; height: 70px; object-fit: contain;
+      margin-bottom: 12px;
+    }
+    .product-card h3 {
+      margin: 0; font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--secondary);
+    }
+    .product-card p {
+      margin: 6px 0 0 0;
+      font-size: 1rem;
+      color: #666b71;
+    }
+    .product-card .add-btn {
+      position: absolute;
+      bottom: 16px;
+      right: 14px;
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      width: 31px;
+      height: 31px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      box-shadow: 0 2px 9px rgba(41,98,255,0.11);
+      transition: background .2s;
+    }
+    .product-card .add-btn:active { background: #1746a2;}
+    #cart-area {
+      margin-top: 28px;
+      background: #e6eeff;
+      border-radius: 12px;
+      padding: 16px 12px;
+      min-height: 50px;
+    }
+    #cart-area h2 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 1.18rem;
+      margin-bottom: 12px;
+    }
+    .cart-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 8px 0;
+    }
+    .cart-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1.02rem;
+      margin-bottom: 7px;
+    }
+    .cart-qty-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 23px;
+      height: 23px;
+      font-size: 1rem;
+      margin: 0 3px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .cart-qty-btn:active { background: #1746a2;}
+    .cart-list .cart-remove-btn {
+      background: transparent;
+      color: #e53935;
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-left: 7px;
+    }
+    #total-area {
+      text-align: right;
+      font-size: 1.13rem;
+      color: var(--secondary);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    #order-btn {
+      background: var(--accent);
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 1.19rem;
+      border: none;
+      border-radius: 25px;
+      padding: 12px 36px;
+      margin-top: 5px;
+      cursor: pointer;
+      float: right;
+      box-shadow: 0 2px 9px rgba(255, 214, 0, 0.07);
+      transition: background .2s;
+    }
+    #order-btn:active {
+      background: #ffea00;
+    }
+    #order-btn:disabled {
+      background: #cfd8dc;
+      color:#888;
+      cursor: not-allowed;
+    }
+    .order-feedback {
+      background: #d1fffc;
+      border-radius: var(--radius);
+      color: #134e3a;
+      padding: 18px 20px;
+      text-align: center;
+      font-size: 1.15rem;
+      margin-top: 20px;
+      animation: feedback-fade .7s;
+    }
+    @keyframes feedback-fade {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    @media (max-width: 800px) {
+      main {padding:24px 7px;}
+    }
+    @media (max-width: 500px) {
+      .product-list { grid-template-columns: 1fr 1fr;}
+    }
+    /* 심플한 스크롤 바 */
+    ::-webkit-scrollbar {
+      width: 7px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ececec;
+      border-radius: 7px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SpeedCafe KIOSK</h1>
+    <p>20-30대 직장인을 위한 초스피드 무인 카페 주문</p>
+  </header>
+  <main>
+    <div class="categories" id="category-area">
+      <!-- JS로 카테고리 버튼 생성 -->
+    </div>
+    <section class="product-list" id="product-list">
+      <!-- JS로 메뉴 생성 -->
+    </section>
+    <section id="cart-area">
+      <h2>나의 주문내역</h2>
+      <ul class="cart-list" id="cart-list"></ul>
+      <div id="total-area">총 합계: 0원</div>
+      <button id="order-btn" disabled>주문하기</button>
+      <div id="order-feedback"></div>
+    </section>
+  </main>
+  <script>
+    // --- 메뉴 데이터 --- //
+    const menuData = [
+      {
+        id: 1,
+        name: "아메리카노(HOT)",
+        category: "커피",
+        price: 2500,
+        img: "https://cdn-icons-png.flaticon.com/512/415/415733.png"
+      },
+      {
+        id: 2,
+        name: "아메리카노(ICE)",
+        category: "커피",
+        price: 2800,
+        img: "https://cdn-icons-png.flaticon.com/512/415/415733.png"
+      },
+      {
+        id: 3,
+        name: "카페라떼(HOT)",
+        category: "커피",
+        price: 3200,
+        img: "https://cdn-icons-png.flaticon.com/512/859/859310.png"
+      },
+      {
+        id: 4,
+        name: "카페라떼(ICE)",
+        category: "커피",
+        price: 3500,
+        img: "https://cdn-icons-png.flaticon.com/512/859/859310.png"
+      },
+      {
+        id: 5,
+        name: "카푸치노",
+        category: "커피",
+        price: 3400,
+        img: "https://cdn-icons-png.flaticon.com/512/169/169405.png"
+      },
+      {
+        id: 6,
+        name: "바닐라라떼",
+        category: "커피",
+        price: 3800,
+        img: "https://cdn-icons-png.flaticon.com/512/922/922699.png"
+      },
+      {
+        id: 7,
+        name: "콜드브루(ICE)",
+        category: "커피",
+        price: 4000,
+        img: "https://cdn-icons-png.flaticon.com/512/3817/3817916.png"
+      },
+      {
+        id: 8,
+        name: "돌체라떼",
+        category: "커피",
+        price: 3900,
+        img: "https://cdn-icons-png.flaticon.com/512/169/169444.png"
+      },
+      {
+        id: 9,
+        name: "딸기쥬스",
+        category: "음료",
+        price: 4200,
+        img: "https://cdn-icons-png.flaticon.com/512/3022/3022506.png"
+      },
+      {
+        id: 10,
+        name: "레몬에이드",
+        category: "음료",
+        price: 3900,
+        img: "https://cdn-icons-png.flaticon.com/512/2473/2473583.png"
+      },
+      {
+        id: 11,
+        name: "유자차(HOT)",
+        category: "음료",
+        price: 3200,
+        img: "https://cdn-icons-png.flaticon.com/512/1159/1159448.png"
+      },
+      {
+        id: 12,
+        name: "자몽차(HOT)",
+        category: "음료",
+        price: 3400,
+        img: "https://cdn-icons-png.flaticon.com/512/6632/6632543.png"
+      },
+      {
+        id: 13,
+        name: "카스테라",
+        category: "디저트",
+        price: 2200,
+        img: "https://cdn-icons-png.flaticon.com/512/1491/1491172.png"
+      },
+      {
+        id: 14,
+        name: "치즈케이크",
+        category: "디저트",
+        price: 3500,
+        img: "https://cdn-icons-png.flaticon.com/512/1456/1456624.png"
+      },
+      {
+        id: 15,
+        name: "쿠키세트(4ea)",
+        category: "디저트",
+        price: 2500,
+        img: "https://cdn-icons-png.flaticon.com/512/2386/2386495.png"
+      },
+      {
+        id: 16,
+        name: "티라미수",
+        category: "디저트",
+        price: 3700,
+        img: "https://cdn-icons-png.flaticon.com/512/135/135661.png"
+      }
+    ];
+    // --- 카테고리 추출 --- //
+    const categories = ["전체", ...Array.from(new Set(menuData.map(item=>item.category)))];
+    let selectedCategory = "전체";
+
+    // --- 카트데이터 ---//
+    let cart = [];
+    function addToCart(productId) {
+      const found = cart.find(item=>item.id===productId);
+      if(found){
+        if (found.qty<9) found.qty++; // 최대 9개
+      } else {
+        cart.push({ id: productId, qty: 1 });
+      }
+      updateCartUI();
+    }
+    function changeQty(productId, delta) {
+      const found = cart.find(item=>item.id===productId);
+      if(!found) return;
+      found.qty += delta;
+      if(found.qty<1) found.qty = 1;
+      if(found.qty>9) found.qty = 9;
+      updateCartUI();
+    }
+    function removeCartItem(productId) {
+      cart = cart.filter(item=>item.id!==productId);
+      updateCartUI();
+    }
+
+    // --- 카테고리 UI --- //
+    function renderCategories(){
+      const area = document.getElementById("category-area");
+      area.innerHTML = "";
+      categories.forEach(cat=>{
+        const btn = document.createElement("button");
+        btn.textContent = cat;
+        btn.className="category-btn";
+        if(cat===selectedCategory) btn.classList.add("active");
+        btn.onclick = ()=>{
+          selectedCategory = cat;
+          document.querySelectorAll(".category-btn").forEach(b=>b.classList.remove("active"));
+          btn.classList.add("active");
+          renderProducts();
+        }
+        area.appendChild(btn);
+      });
+    }
+
+    // --- 상품리스트 UI --- //
+    function renderProducts(){
+      const list = document.getElementById("product-list");
+      list.innerHTML = "";
+      const filtered = selectedCategory==="전체" ? menuData : menuData.filter(item=>item.category===selectedCategory);
+      filtered.forEach(prod=>{
+        const card = document.createElement("div");
+        card.className="product-card";
+        card.innerHTML = `
+            <img src="${prod.img}" alt="${prod.name}">
+            <h3>${prod.name}</h3>
+            <p>${prod.price.toLocaleString()}원</p>
+            <button class="add-btn" title="추가" tabindex="0">+</button>
+        `;
+        card.querySelector(".add-btn").onclick = (e)=>{
+          e.stopPropagation();
+          addToCart(prod.id);
+        }
+        card.onclick = ()=>{
+          addToCart(prod.id);
+        }
+        list.appendChild(card);
+      });
+    }
+
+    // --- 카트 UI --- //
+    function updateCartUI(){
+      const area = document.getElementById("cart-list");
+      const totalArea = document.getElementById("total-area");
+      const orderBtn = document.getElementById("order-btn");
+      area.innerHTML = "";
+      if(cart.length==0){
+        area.innerHTML = `<li style="color:#757575;font-size:1rem;">아직 메뉴를 선택하지 않았어요.</li>`;
+        totalArea.textContent="총 합계: 0원";
+        orderBtn.disabled = true;
+        return;
+      }
+      let total = 0;
+      cart.forEach(item=>{
+        const prod = menuData.find(m=>m.id===item.id);
+        total += prod.price * item.qty;
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <span>${prod.name}</span>
+          <span>
+            <button class="cart-qty-btn" onclick="changeQtyInline(${item.id},-1)">-</button>
+            ${item.qty}
+            <button class="cart-qty-btn" onclick="changeQtyInline(${item.id},1)">+</button>
+            <span style="margin:0 7px 0 7px">${(prod.price * item.qty).toLocaleString()}원</span>
+            <button class="cart-remove-btn" onclick="removeCartItemInline(${item.id})" title="삭제">🗑️</button>
+          </span>
+        `;
+        area.appendChild(li);
+      });
+      totalArea.textContent = "총 합계: "+total.toLocaleString()+"원";
+      orderBtn.disabled = false;
+    }
+    // window 전역함수로 내보내야 button의 onclick에서 호출됨
+    window.changeQtyInline = (id,delta)=>{ changeQty(id,delta);}
+    window.removeCartItemInline = (id)=>{ removeCartItem(id);}
+    
+    // --- 주문 버튼 --- //
+    document.getElementById("order-btn").onclick=function(){
+      if(cart.length==0) return;
+      // 평균 대기시간 계산(=제품개수 x 15초라 가정, 실제단축 강조)
+      const waitingSec = Math.floor(cart.reduce((sum,item)=>sum + item.qty, 0)*15/2); // 50% 단축
+      // 주문 내역
+      let orderStr = "<br>주문 완료!<br>";
+      orderStr += cart.map(item=>{
+        const prod = menuData.find(p=>p.id===item.id);
+        return `${prod.name}<span style="color:#2962ff;"> ${item.qty}개</span>`;
+      }).join(", ");
+      orderStr += `<br><br><strong style="color:#108876;">예상 준비시간: ${waitingSec}초</strong> (50% 단축!)`;
+      document.getElementById("order-feedback").innerHTML = `<div class="order-feedback">${orderStr}</div>`;
+      // 주문 초기화
+      cart = [];
+      updateCartUI();
+      setTimeout(()=>{
+        document.getElementById("order-feedback").innerHTML = "";
+      },5000);
+    };
+    // --- 최초 출력 --- //
+    renderCategories();
+    renderProducts();
+    updateCartUI();
+  </script>
+</body>
+</html>
