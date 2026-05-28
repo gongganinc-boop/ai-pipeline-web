@@ -1,0 +1,445 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>카페 니끄(Café Nique) 소개</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700&family=Montserrat:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Montserrat', 'Nanum Myeongjo', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #faf6f3;
+      color: #353535;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #896c52;
+      color: #fff;
+      padding: 24px 32px;
+      box-shadow: 0 2px 8px rgba(100,85,61,0.08);
+    }
+
+    header .logo {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 2.3em;
+      letter-spacing: 2px;
+      font-weight: 700;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin-left: 28px;
+      font-size: 1.05em;
+      font-weight: 500;
+      transition: text-shadow 0.2s;
+    }
+    nav a:hover {
+      text-shadow: 0 1px 10px #e6d5bd;
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=900&q=60') center/cover no-repeat;
+      height: 340px;
+      color: #fff;
+      text-shadow: 0 2px 14px rgba(80,60,40,0.3);
+      position: relative;
+    }
+    .hero::after {
+      content: "";
+      background: rgba(137,108,82,0.25);
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      width: 100%;
+      padding: 0 24px;
+    }
+    .hero-content h1 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 2.9em;
+      margin-bottom: 14px;
+      margin-top: 0;
+    }
+    .hero-content p {
+      font-size: 1.1em;
+      margin: 0;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      margin-top: 48px;
+      padding: 0 18px 18px 18px;
+      background: #fff5e1;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(210,196,157,0.09);
+    }
+    section {
+      margin-top: 38px;
+      margin-bottom: 44px;
+    }
+    section h2 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 1.7em;
+      margin-bottom: 12px;
+      color: #69513a;
+    }
+    .menu-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 36px;
+      justify-content: center;
+    }
+    .menu-item {
+      background: #fff;
+      border-radius: 13px;
+      box-shadow: 0 2px 10px rgba(169,154,120,0.08);
+      width: 190px;
+      text-align: center;
+      padding: 18px 8px 13px 8px;
+      transition: transform 0.16s, box-shadow 0.18s;
+      cursor: pointer;
+    }
+    .menu-item:hover {
+      transform: translateY(-7px) scale(1.025);
+      box-shadow: 0 8px 24px rgba(185,170,123,0.21);
+      background: #f9eee3;
+    }
+    .menu-item img {
+      width: 72px;
+      height: 72px;
+      object-fit: cover;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 8px rgba(153,133,90,0.08);
+    }
+    .menu-item h3 {
+      font-size: 1.12em;
+      margin: 9px 0 5px 0;
+    }
+    .menu-item p {
+      font-size: 0.98em;
+      margin: 0;
+      color: #93701a;
+    }
+
+    .about-desc {
+      font-size: 1.11em;
+      color: #514135;
+      margin-bottom: 17px;
+      line-height: 1.5em;
+    }
+    .location {
+      text-align: left;
+    }
+    .location-info {
+      font-size: 1.03em;
+      color: #634932;
+      margin-bottom: 12px;
+    }
+    .map-wrap {
+      width: 100%;
+      height: 230px;
+      border-radius: 13px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 8px #e3dbc6;
+    }
+
+    .contact-info {
+      font-size: 1.01em;
+      color: #6b563c;
+      margin-bottom: 8px;
+    }
+
+    .review-section {
+      margin-top: 18px;
+      color: #4f3919;
+    }
+    .review-list {
+      margin-top: 12px;
+      margin-bottom: 14px;
+      padding-left: 0;
+      list-style: none;
+    }
+    .review-item {
+      background: #fff7ecc7;
+      border-radius: 8px;
+      margin-bottom: 9px;
+      padding: 10px 13px 8px 13px;
+      font-size: 0.97em;
+    }
+    .review-item .review-author {
+      font-size: 0.93em;
+      color: #b48e3b;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .add-review-form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      margin-top: 6px;
+    }
+    .add-review-form input,
+    .add-review-form textarea {
+      border: 1px solid #e0dbc8;
+      border-radius: 5px;
+      padding: 6px 7px;
+      outline: none;
+      font-size: 1em;
+      font-family: inherit;
+      background: #fff;
+      transition: border 0.16s;
+      width: 99%;
+      max-width: 330px;
+      resize: vertical;
+    }
+    .add-review-form input:focus,
+    .add-review-form textarea:focus {
+      border: 1.2px solid #be9d6e;
+      background: #fffaed;
+    }
+    .add-review-form button {
+      margin-top: 3px;
+      background: #be9d6e;
+      color: #fff;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 1px 6px #ecd7a7;
+      font-family: inherit;
+      transition: background 0.18s;
+    }
+    .add-review-form button:hover {
+      background: #9b8261;
+    }
+    footer {
+      text-align: center;
+      padding: 26px 0 20px 0;
+      background: #f7e9cd;
+      color: #997b47;
+      margin-top: 40px;
+      font-size: 1.01em;
+      letter-spacing: 1px;
+      border-top-left-radius: 14px;
+      border-top-right-radius: 14px;
+    }
+    @media (max-width: 700px) {
+      header, main {
+        padding-left: 9px;
+        padding-right: 9px;
+      }
+      main {
+        border-radius: 0;
+      }
+    }
+    @media (max-width: 600px) {
+      .hero { height: 170px; }
+      .menu-list { gap: 16px; }
+      .menu-item { width: 46vw; min-width: 118px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">카페 니끄</div>
+    <nav>
+      <a href="#about">소개</a>
+      <a href="#menu">메뉴</a>
+      <a href="#location">위치</a>
+      <a href="#review">리뷰</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-content">
+      <h1>Café Nique</h1>
+      <p>향긋한 커피와 달콤한 디저트가 조화를 이루는 당신만의 아늑한 공간.<br>
+      오늘 카페 니끄에서 여유를 즐겨보세요.</p>
+    </div>
+  </div>
+
+  <main>
+    <section id="about">
+      <h2>카페 소개</h2>
+      <div class="about-desc">
+        카페 니끄는 원두 본연의 깊은 풍미와 매일 소량으로 구워내는 수제 베이커리가 어우러진 작은 동네 카페입니다.<br>
+        고급스러운 분위기, 감각적인 음악, 그리고 오랜 정성으로 우려낸 커피 한 잔을 제공해드립니다.<br>
+        친구, 가족, 연인과 함께 소중한 순간을 카페 니끄에서 보내세요!
+      </div>
+    </section>
+
+    <section id="menu">
+      <h2>베스트 메뉴</h2>
+      <div class="menu-list">
+        <div class="menu-item">
+          <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=160&q=80" alt="아메리카노">
+          <h3>니끄 시그니처 아메리카노</h3>
+          <p>4,000원</p>
+        </div>
+        <div class="menu-item">
+          <img src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=160&q=80" alt="라떼">
+          <h3>벨벳라떼</h3>
+          <p>4,800원</p>
+        </div>
+        <div class="menu-item">
+          <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=160&q=80" alt="케이크">
+          <h3>하우스 티라미수</h3>
+          <p>6,000원</p>
+        </div>
+        <div class="menu-item">
+          <img src="https://images.unsplash.com/photo-1519864600265-abb23847ef2c?auto=format&fit=crop&w=160&q=80" alt="크로와상">
+          <h3>버터 크로와상</h3>
+          <p>3,800원</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="location">
+      <h2>위치 안내</h2>
+      <div class="location">
+        <div class="location-info">
+          서울특별시 서초구 카페로 14길 22, 1층<br>
+          (지하철 2호선 강남역 11번 출구 도보 5분)
+        </div>
+        <div class="map-wrap">
+          <iframe
+            title="카페 위치 지도"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            style="border:0"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=127.02674102783205%2C37.49608638419578%2C127.03277587890625%2C37.49947837640872&amp;layer=mapnik&amp;marker=37.49778%2C127.029758"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <div class="contact-info">
+          <strong>운영시간</strong>: 평일 09:00~21:00, 토/일 10:00~20:00<br>
+          <strong>문의</strong>: 02-1234-5678<br>
+          <strong>Wi-Fi 안내</strong>: Cafeniq_Guest / <span style="font-size:0.99em">ask at counter</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="review" class="review-section">
+      <h2>방문자 리뷰</h2>
+      <ul class="review-list" id="reviewList">
+        <!-- 리뷰가 여기에 출력됩니다 -->
+      </ul>
+      <form class="add-review-form" id="reviewForm" autocomplete="off">
+        <label for="author">닉네임</label>
+        <input type="text" id="author" name="author" maxlength="15" required placeholder="닉네임을 입력해 주세요">
+        <label for="review">리뷰</label>
+        <textarea id="review" name="review" maxlength="120" rows="2" required placeholder="방문 후기를 남겨주세요"></textarea>
+        <button type="submit">리뷰 남기기</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2024 Café Nique (카페 니끄) <span style="font-size:0.93em;">- 당신의 일상에 한잔의 여유를</span>
+  </footer>
+
+  <script>
+    // 기본 리뷰 데이터
+    const defaultReviews = [
+      {
+        author: 'coffeeholic',
+        text: '아늑한 분위기와 고소한 커피향이 정말 최고에요!',
+        date: '2024-06-11'
+      },
+      {
+        author: '초코케이크마니아',
+        text: '티라미수가 진짜 부드럽고 맛있어요. 디저트 추천합니다 :)',
+        date: '2024-06-12'
+      }
+    ];
+
+    // LocalStorage 키
+    const STORAGE_KEY = 'cafeniq_reviews';
+
+    // 리뷰 로드
+    function loadReviews() {
+      let reviews = [];
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          reviews = JSON.parse(stored);
+        } else {
+          reviews = defaultReviews;
+        }
+      } catch {
+        reviews = defaultReviews;
+      }
+      return reviews;
+    }
+
+    // 리뷰 저장
+    function saveReviews(reviews) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews));
+    }
+
+    // 리뷰 목록 그리기
+    function renderReviews() {
+      const reviews = loadReviews();
+      const reviewList = document.getElementById('reviewList');
+      reviewList.innerHTML = '';
+      if (reviews.length === 0) {
+        reviewList.innerHTML = '<li style="opacity:0.7;margin:12px 0;">등록된 리뷰가 없습니다.</li>';
+        return;
+      }
+      for (let i = reviews.length-1; i >= 0; i--) {
+        const review = reviews[i];
+        const li = document.createElement('li');
+        li.className = 'review-item';
+        let d = review.date ? `<span title="${review.date}" style="font-size:0.92em;color:#b0a179;float:right">${review.date}</span>` : '';
+        li.innerHTML = `<span>${review.text}</span><span class="review-author">- ${review.author}</span>${d}`;
+        reviewList.appendChild(li);
+      }
+    }
+
+    // 리뷰 제출 이벤트
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const author = document.getElementById('author').value.trim();
+      const review = document.getElementById('review').value.trim();
+
+      if (!author || !review) return;
+
+      let reviews = loadReviews();
+      // 날짜 구하기
+      const now = new Date();
+      const ymd = now.getFullYear() + '-' + ('0'+(now.getMonth()+1)).slice(-2) + '-' + ('0'+now.getDate()).slice(-2);
+
+      reviews.push({
+        author,
+        text: review,
+        date: ymd
+      });
+      saveReviews(reviews);
+      renderReviews();
+      this.reset();
+    });
+
+    // 초기 로딩
+    renderReviews();
+  </script>
+</body>
+</html>
