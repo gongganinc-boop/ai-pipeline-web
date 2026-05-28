@@ -1,0 +1,404 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>스마트 홈 IoT 기기 통합 관리 앱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #1976d2;
+      --secondary: #fff;
+      --accent: #43a047;
+      --danger: #e53935;
+      --bg: #f5f5f5;
+      --text: #222;
+      --card: #fff;
+      --shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background: var(--primary);
+      color: var(--secondary);
+      padding: 1.5rem 0 1rem 0;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      margin: 0 0 0.5rem 0;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+    header p {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 400;
+      opacity: 0.85;
+    }
+    main {
+      padding: 2rem 1rem 1rem 1rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    section {
+      margin-bottom: 2.5rem;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+    /* Device Cards */
+    .devices-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.2rem;
+    }
+    .device-card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      padding: 1.3rem 1.2rem 1.2rem 1.2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s;
+      position: relative;
+    }
+    .device-card .icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.7rem;
+    }
+    .device-name {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+    }
+    .device-status {
+      font-size: 0.98rem;
+      margin-bottom: 1rem;
+      min-height: 1.3rem;
+    }
+    .toggle-btn {
+      cursor: pointer;
+      padding: 7px 22px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 50px;
+      color: var(--secondary);
+      background: var(--accent);
+      transition: background 0.2s;
+      font-weight: 500;
+      outline: none;
+      margin-top: auto;
+    }
+    .toggle-btn.off {
+      background: var(--danger);
+    }
+    /* Energy Stats */
+    .energy-container {
+      background: var(--card);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 1.2rem 1.2rem 1.5rem 1.2rem;
+    }
+    .energy-summary {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 1.4rem;
+      flex-wrap: wrap;
+    }
+    .energy-item {
+      flex: 1 0 120px;
+      min-width: 120px;
+      text-align: center;
+      margin: 0.5rem 0;
+    }
+    .energy-item .label {
+      font-size: 0.98rem;
+      color: #666;
+    }
+    .energy-item .value {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-top: 0.15rem;
+      color: var(--primary);
+    }
+    /* Chart */
+    #energy-chart {
+      display: block;
+      margin: 0 auto;
+      max-width: 600px;
+      width: 100%;
+      height: 220px;
+      background: #f7f8fa;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(25, 118, 210,0.03);
+    }
+    /* Responsive */
+    @media (max-width: 680px) {
+      header {font-size: 1rem;}
+      .energy-summary {flex-direction: column;}
+    }
+    @media (max-width: 450px) {
+      main {padding: 1rem 0.3rem;}
+    }
+    /* Misc */
+    .poweredby {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin-top: 2.5rem;
+      opacity: 0.7;
+    }
+    .updatedata-btn {
+      margin: 0.9rem 0 0.7rem 0;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 7px;
+      padding: 0.24rem 1.1rem;
+      font-size: 0.97rem;
+      cursor: pointer;
+      transition: 0.16s;
+    }
+    .updatedata-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+  <header>
+    <h1>스마트 홈 IoT 통합 관리센터</h1>
+    <p>우리집 전자기기의 상태를 한눈에 확인하고, 에너지 사용량을 똑똑하게 관리하세요.</p>
+  </header>
+  <main>
+    <!-- Device Control Section -->
+    <section>
+      <div class="section-title"><i class="fas fa-plug"></i> 전자기기 원격 제어</div>
+      <div class="devices-grid" id="devicesGrid">
+        <!-- Device cards will be rendered here -->
+      </div>
+    </section>
+    <!-- Energy Analytics Section -->
+    <section>
+      <div class="section-title"><i class="fas fa-bolt"></i> 에너지 사용량 분석</div>
+      <div class="energy-container">
+        <button class="updatedata-btn" onclick="simulateEnergyUse()">데이터 새로고침</button>
+        <div class="energy-summary" id="energySummary">
+          <!-- Energy summary dynamically rendered -->
+        </div>
+        <canvas id="energy-chart" width="600" height="220"></canvas>
+      </div>
+    </section>
+  </main>
+  <div class="poweredby">
+    <span>&copy; 2024 스마트홈 IoT 관리 서비스 | Designed for 아파트 거주자</span>
+  </div>
+  <script>
+    // Sample devices (customize as needed)
+    const devices = [
+      {
+        id: "ac",
+        name: "에어컨",
+        type: "에어컨",
+        icon: "fa-solid fa-wind",
+        status: false,
+        usage: [1.2, 1.8, 2.1, 0.5, 0.8, 2.5, 1.1] // kWh for last 7 days
+      },
+      {
+        id: "light",
+        name: "거실 조명",
+        type: "조명",
+        icon: "fa-solid fa-lightbulb",
+        status: true,
+        usage: [0.3, 0.4, 0.27, 0.38, 0.45, 0.5, 0.47]
+      },
+      {
+        id: "tv",
+        name: "TV",
+        type: "TV",
+        icon: "fa-solid fa-tv",
+        status: false,
+        usage: [0.22, 0.19, 0.21, 0.3, 0.35, 0.27, 0.31]
+      },
+      {
+        id: "boiler",
+        name: "보일러",
+        type: "보일러",
+        icon: "fa-solid fa-fire",
+        status: false,
+        usage: [2.9, 2.8, 3.1, 2.7, 2.6, 3.3, 2.8]
+      }
+    ];
+    // Energy data for last 7 days (aggregate for entire home)
+    let energyDaily = [];
+    function updateAggregateEnergy() {
+      energyDaily = [];
+      for(let i=0;i<7;i++){
+        let sum = 0;
+        for (const d of devices) sum+= d.usage[i];
+        energyDaily.push(parseFloat(sum.toFixed(2)));
+      }
+    }
+    updateAggregateEnergy();
+
+    // Device Control UI
+    function renderDevices() {
+      const grid = document.getElementById('devicesGrid');
+      grid.innerHTML = '';
+      devices.forEach((dev, idx) => {
+        const isOn = dev.status;
+        const card = document.createElement('div');
+        card.className = 'device-card';
+        card.innerHTML = `
+          <div class="icon" style="color:${isOn ? '#43a047' : '#777'};">
+            <i class="${dev.icon}"></i>
+          </div>
+          <div class="device-name">${dev.name}</div>
+          <div class="device-status">${isOn ? '<span style="color:#43a047">켜짐</span>' : '<span style="color:#e53935">꺼짐</span>'}</div>
+          <button class="toggle-btn${isOn?'':' off'}" onclick="toggleDevice('${dev.id}')">
+            ${isOn ? '끄기' : '켜기'}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+    function toggleDevice(id) {
+      const idx = devices.findIndex(d=>d.id===id);
+      if (idx>-1) {
+        devices[idx].status = !devices[idx].status;
+        renderDevices();
+      }
+    }
+
+    // Energy Analytics UI
+    function renderEnergySummary() {
+      // 오늘/어제 사용량, 7일 평균, 전주 대비 증감 등
+      const today = energyDaily[6], yesterday = energyDaily[5];
+      const avg = (energyDaily.reduce((a, b)=>a+b, 0))/7;
+      const diff = today - yesterday;
+      // 전주 대비 (여기선 임의 10% 감소라고 표시)
+      const summaryHTML = `
+        <div class="energy-item">
+          <div class="label">오늘 사용량</div>
+          <div class="value">${today.toFixed(2)} kWh</div>
+        </div>
+        <div class="energy-item">
+          <div class="label">어제 사용량</div>
+          <div class="value">${yesterday.toFixed(2)} kWh</div>
+        </div>
+        <div class="energy-item">
+          <div class="label">7일 평균</div>
+          <div class="value">${avg.toFixed(2)} kWh</div>
+        </div>
+        <div class="energy-item">
+          <div class="label">전일 대비</div>
+          <div class="value" style="color:${diff>0?'#e53935':'#43a047'};">
+            ${diff>0? '+' : ''}${diff.toFixed(2)} kWh
+          </div>
+        </div>
+      `;
+      document.getElementById('energySummary').innerHTML = summaryHTML;
+    }
+
+    // Energy Usage Chart Drawing (Canvas)
+    function renderEnergyChart() {
+      const cvs = document.getElementById('energy-chart');
+      const ctx = cvs.getContext('2d');
+      // Clear
+      ctx.clearRect(0,0, cvs.width, cvs.height);
+      // Axes
+      const paddingL = 45, paddingR = 18, paddingT = 26, paddingB = 32;
+      const w = cvs.width, h = cvs.height;
+      const plotW = w - paddingL - paddingR, plotH = h - paddingT - paddingB;
+      // Y-axis: auto scale
+      const maxVal = Math.ceil(Math.max(...energyDaily)*1.15 + 0.6);
+      ctx.font = '13px Arial';
+      ctx.strokeStyle = "#b0bbe7";
+      ctx.fillStyle = "#677890";
+      ctx.beginPath();
+      for(let i=0;i<5;i++){
+        let v = maxVal*(1-i/4);
+        let y = paddingT + plotH * i/4;
+        ctx.moveTo(paddingL, y);
+        ctx.lineTo(w-paddingR, y);
+        ctx.fillText(v.toFixed(1), paddingL-27, y+4);
+      }
+      ctx.lineWidth=1;
+      ctx.stroke();
+
+      // X-axis labels (요일)
+      const days = ["월", "화", "수", "목", "금", "토", "일"];
+      for(let i=0;i<7;i++){
+        let x = paddingL + plotW*i/6;
+        ctx.fillText(days[i], x-6, h-paddingB+22);
+      }
+      // Draw line
+      ctx.beginPath();
+      ctx.moveTo(paddingL, paddingT + plotH*(1-energyDaily[0]/maxVal));
+      for(let i=1;i<7;i++) {
+        let x = paddingL + plotW*i/6;
+        let y = paddingT + plotH*(1-energyDaily[i]/maxVal);
+        ctx.lineTo(x, y);
+      }
+      ctx.strokeStyle = "#1976d2";
+      ctx.lineWidth = 2.9;
+      ctx.stroke();
+      // Draw dots
+      for(let i=0;i<7;i++) {
+        let x = paddingL + plotW*i/6;
+        let y = paddingT + plotH*(1-energyDaily[i]/maxVal);
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, 2*Math.PI);
+        ctx.fillStyle="#fff";
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, 2*Math.PI);
+        ctx.fillStyle="#1976d2";
+        ctx.fill();
+      }
+    }
+
+    // Simulate new energy usage for demo
+    function simulateEnergyUse() {
+      for (const d of devices) {
+        let newval = (Math.random()*1.3+0.2).toFixed(2)*1;
+        d.usage.shift();
+        d.usage.push(newval);
+      }
+      updateAggregateEnergy();
+      renderEnergySummary();
+      renderEnergyChart();
+    }
+
+    // Initial Render
+    renderDevices();
+    renderEnergySummary();
+    renderEnergyChart();
+
+    // Responsive: Redraw chart on resize
+    window.addEventListener('resize', ()=>{
+      const cvs = document.getElementById('energy-chart');
+      if (window.innerWidth < 650) {
+        cvs.width = window.innerWidth - 36;
+      } else {
+        cvs.width = 600;
+      }
+      renderEnergyChart();
+    });
+
+    window.dispatchEvent(new Event('resize'));
+  </script>
+</body>
+</html>
