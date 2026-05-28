@@ -1,0 +1,280 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>대표이사 테스트 문자</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f6f8fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    header {
+      background: #222e3a;
+      color: #fff;
+      width: 100%;
+      padding: 32px 0 18px 0;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    main {
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 15px;
+      padding: 36px 28px;
+      width: 95%;
+      max-width: 430px;
+      margin-top: -32px;
+      margin-bottom: 32px;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2em;
+      letter-spacing: -1px;
+    }
+    .desc {
+      margin: 18px 0 34px 0;
+      color: #333;
+      font-size: 1.08em;
+      text-align: center;
+    }
+
+    .question-box {
+      margin-bottom: 27px;
+      background: #eff1f4;
+      border-radius: 8px;
+      padding: 19px 18px 12px 18px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.022);
+      min-height: 70px;
+      font-size: 1.11em;
+      color: #2e3135;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .choices {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      margin-bottom: 10px;
+    }
+    .choice-btn {
+      padding: 13px 14px;
+      font-size: 1em;
+      border-radius: 6px;
+      border: 1.4px solid #bfc8d4;
+      background: #fafbfc;
+      cursor: pointer;
+      transition: background 0.15s, border 0.15s, color 0.13s;
+    }
+    .choice-btn:hover, .choice-btn:focus {
+      background: #dde7fe;
+      border-color: #3983f7;
+      color: #23409b;
+    }
+    .progress {
+      width: 100%;
+      background: #e2e5ed;
+      border-radius: 4px;
+      height: 9px;
+      margin-bottom: 18px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: #3983f7;
+      width: 0%;
+      transition: width 0.28s;
+    }
+    .result-box {
+      text-align: center;
+      padding: 12px 0 2px 0;
+      min-height: 80px;
+    }
+    .result-title {
+      font-size: 1.45em;
+      font-weight: bold;
+      color: #233e90;
+      margin-bottom: 12px;
+      margin-top: 10px;
+    }
+    .result-desc {
+      font-size: 1.08em;
+      color: #444;
+      margin-bottom: 20px;
+    }
+    .restart-btn {
+      margin-top: 18px;
+      padding: 11px 27px;
+      font-size: 1em;
+      background: #2859c2;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      letter-spacing: 1.1px;
+      transition: background 0.18s;
+    }
+    .restart-btn:hover {
+      background: #1c335c;
+    }
+    @media (max-width:600px) {
+      main { padding: 23px 5px; }
+      h1 { font-size: 1.35em;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>대표이사 테스트 문자</h1>
+  </header>
+  <main id="main">
+    <div class="desc">
+      당신이 만약 대표이사라면<br>
+      중요한 의사소통에 어떤 문자를 보낼까요?<br>
+      간단한 질문들에 답하며, 당신의 '대표이사' 스타일을 알아보세요!
+    </div>
+    <div class="progress">
+      <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <div id="quiz-area">
+      <!-- 질문 및 선택지 들어갈 자리 -->
+    </div>
+  </main>
+  <script>
+    // 질문 세트(섞을 수도 있지만 고정 예시)
+    const questions = [
+      {
+        q: "갑자기 전사 공지가 필요해졌습니다. 어떤 문자를 먼저 보낼까요?",
+        choices: [
+          { text: "중요 공지 있으니 전체 임직원에게 안내 부탁합니다.", type: "정중" },
+          { text: "전체 공지 바로 보내세요.", type: "직설" },
+          { text: "임원진 우선 전달 후 전체 전파합시다.", type: "전략" },
+          { text: "바쁜데 이거 꼭 필요합니까?", type: "의문" }
+        ]
+      },
+      {
+        q: "저녁 7시에 부장에게 문자할 일이 생겼습니다. 당신의 문자 스타일은?",
+        choices: [
+          { text: "죄송하지만 지금 공유드릴 사안 있습니다.", type: "정중" },
+          { text: "지금 확인 바랍니다.", type: "직설" },
+          { text: "내일 회의에 참고하세요.", type: "전략" },
+          { text: "저녁인데 괜찮으시면 확인 한 번 부탁드립니다.", type: "의문" }
+        ]
+      },
+      {
+        q: "프로젝트 강제 마감이 필요해 보입니다. 어떻게 요청할까요?",
+        choices: [
+          { text: "불가피하게 기한 단축 부탁드립니다.", type: "정중" },
+          { text: "내일까지 무조건 끝냅시다.", type: "직설" },
+          { text: "리스크 대비 플랜도 준비 바랍니다.", type: "전략" },
+          { text: "이게 정말 지금 다 끝낼 수 있는 일인가요?", type: "의문" }
+        ]
+      },
+      {
+        q: "임원이 실수를 보고했습니다. 답장을 어떻게 할까요?",
+        choices: [
+          { text: "실수는 누구나 할 수 있습니다. 재발 방지 방안 부탁드려요.", type: "정중" },
+          { text: "다음부터 실수 없도록 하세요.", type: "직설" },
+          { text: "이 상황 향후 영향 분석 바랍니다.", type: "전략" },
+          { text: "무슨 이유로 이런 실수가 발생했나요?", type: "의문" }
+        ]
+      },
+      {
+        q: "스팟 진단 결과가 나왔습니다. 어떻게 공유할까요?",
+        choices: [
+          { text: "결과 잘 공유받았습니다. 개선사항 논의 부탁드립니다.", type: "정중" },
+          { text: "문제점 빠르게 조치하세요.", type: "직설" },
+          { text: "우선순위 별로 대응전략 마련부터 합시다.", type: "전략" },
+          { text: "결과 요약해서 다시 보고 주실 수 있나요?", type: "의문" }
+        ]
+      }
+    ];
+
+    // 결과 유형 정의
+    const results = {
+      "정중": {
+        title: "정중한 소통의 대표이사",
+        desc: "당신은 언제나 예의를 갖추면서도, 상대의 입장을 배려하는 스타일입니다. 조직 전체가 신뢰할 수 있는 소통 리더! 조직원들이 믿고 따라올 수 있습니다."
+      },
+      "직설": {
+        title: "추진력 있는 대표이사",
+        desc: "빠른 전달, 명확한 명령! 당신은 실행과 스피드를 중시하는 스타일입니다. 목표 지향적이고 효율이 높은 대표이사 타입이네요."
+      },
+      "전략": {
+        title: "전략가 대표이사",
+        desc: "항상 큰 그림을 보고 세심한 전략을 짭니다. 여러 상황을 고려하여 최선의 결과를 추구하는 똑똑한 대표이사였습니다."
+      },
+      "의문": {
+        title: "신중하고 꼼꼼한 대표이사",
+        desc: "쉽게 결론내지 않고, 왜? 어떻게?를 계속 질문합니다. 직원 의견을 경청하고 신중하게 결정하는 꼼꼼한 리더군요."
+      }
+    };
+
+    let current = 0;
+    let scores = { "정중": 0, "직설": 0, "전략": 0, "의문": 0 };
+
+    function renderQuestion() {
+      const area = document.getElementById('quiz-area');
+      if (current >= questions.length) {
+        showResult();
+        return;
+      }
+      // progress bar
+      document.getElementById('progress-bar').style.width =
+          ((current)/questions.length*100).toFixed(1) + "%";
+
+      // 문항
+      const q = questions[current];
+      let html = `<div class="question-box">${q.q}</div>`;
+      html += `<div class="choices">`;
+      for (let i=0; i<q.choices.length; ++i) {
+        html += `<button class="choice-btn" onclick="selectChoice(${i})">${q.choices[i].text}</button>`;
+      }
+      html += `</div>`;
+      area.innerHTML = html;
+    }
+
+    window.selectChoice = function(choiceIdx) {
+      const type = questions[current].choices[choiceIdx].type;
+      scores[type]++;
+      current++;
+      renderQuestion();
+    }
+
+    function showResult() {
+      document.getElementById('progress-bar').style.width = "100%";
+      // 가장 높은 점수 찾기(동점이면 랜덤)
+      let maxVal = Math.max(...Object.values(scores));
+      let maxTypes = Object.entries(scores).filter(
+        ([k, v])=>v===maxVal
+      ).map(([k])=>k);
+      let pick = maxTypes[Math.floor(Math.random()*maxTypes.length)];
+      const r = results[pick];
+      const area = document.getElementById('quiz-area');
+      area.innerHTML = `
+        <div class="result-box">
+          <div class="result-title">${r.title}</div>
+          <div class="result-desc">${r.desc}</div>
+          <button class="restart-btn" onclick="restartQuiz()">다시하기</button>
+        </div>
+      `;
+    }
+
+    window.restartQuiz = function() {
+      current = 0;
+      scores = { "정중": 0, "직설": 0, "전략": 0, "의문": 0 };
+      document.getElementById('progress-bar').style.width = "0%";
+      renderQuestion();
+    }
+
+    // 초기에 질문 표시
+    renderQuestion();
+  </script>
+</body>
+</html>
