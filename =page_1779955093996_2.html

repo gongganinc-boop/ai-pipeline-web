@@ -1,0 +1,541 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>AI 기반 스마트 홈 제어 앱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #eef2f9 0%, #d1e3fa 100%);
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 420px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 0 30px #b0cbe633;
+      padding: 36px 28px 28px 28px;
+      position: relative;
+      min-height: 600px;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 26px;
+    }
+    .header h1 {
+      font-size: 2rem;
+      margin: 0 0 8px 0;
+      color: #395886;
+      font-weight: 700;
+    }
+    .header p {
+      font-size: 1.07rem;
+      color: #5a738d;
+      margin: 0;
+    }
+    .voice-btn {
+      background: linear-gradient(90deg,#7acdee 30%,#5470ff 90%);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 62px;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.1rem;
+      margin: 18px auto 12px auto;
+      box-shadow: 0 4px 16px #7acdee44;
+      cursor: pointer;
+      transition: box-shadow .2s, background .2s;
+      outline: none;
+    }
+    .voice-btn.listening {
+      background: linear-gradient(90deg, #ffcc70 30%, #ff5e62 90%);
+      box-shadow: 0 6px 30px #ffbf7044;
+      animation: pulse 1.1s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 #ffbf704a; }
+      70% { box-shadow: 0 0 0 10px #ffbf7000; }
+      100% { box-shadow: 0 0 0 0 #ffbf704a; }
+    }
+    .voice-status {
+      text-align: center;
+      color: #5470ff;
+      min-height: 28px;
+      font-size: 1.03rem;
+      margin-bottom: 10px;
+    }
+    .devices-list {
+      margin: 14px 0 20px 0;
+      border-top: 1px solid #dde7f2;
+      padding-top: 8px;
+    }
+    .device-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      padding: 8px 0;
+    }
+    .device-name {
+      font-size: 1.1rem;
+      color: #395886;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      flex: 1;
+    }
+    .device-toggle {
+      appearance: none;
+      width: 46px;
+      height: 24px;
+      background: #cee3fb;
+      border-radius: 18px;
+      position: relative;
+      outline: none;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .device-toggle:checked {
+      background: #7acdee;
+    }
+    .device-toggle::before {
+      content: '';
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px #8881;
+      transition: left .2s;
+    }
+    .device-toggle:checked::before {
+      left: 24px;
+    }
+    .schedule-section {
+      margin: 6px 0 23px 0;
+    }
+    .schedule-list {
+      padding-left: 0;
+      margin: 0;
+      list-style: none;
+    }
+    .schedule-list li {
+      font-size: .96rem;
+      margin-bottom: 6px;
+      background: #eaf3fc;
+      padding: 7px 13px;
+      border-radius: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .schedule-list .remove {
+      color: #b60000;
+      font-size: 1.1rem;
+      cursor: pointer;
+      margin-left: 9px;
+    }
+    .add-schedule-form {
+      display: flex;
+      margin-top: 10px;
+      gap: 6px;
+    }
+    .add-schedule-form input, .add-schedule-form select {
+      padding: 5px 7px;
+      font-size: .98rem;
+      border: 1px solid #bdd2e6;
+      border-radius: 7px;
+    }
+    .add-schedule-form button {
+      background: #7acdee;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 5px 18px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .add-schedule-form button:hover {
+      background: #5470ff;
+    }
+    .energy-section {
+      background: linear-gradient(100deg, #e3f5d5,#fff4c9 70%);
+      border-radius: 19px;
+      padding: 20px 14px 14px 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 16px #abe26b22;
+    }
+    .energy-section h3 {
+      margin: 0 0 12px 0;
+      color: #617709;
+      font-size: 1.09rem;
+      font-weight: 600;
+    }
+    .energy-stats {
+      font-size: 2rem;
+      color: #99b216;
+      display: flex;
+      align-items: flex-end;
+      font-weight: 700;
+    }
+    .energy-saved {
+      margin-left: 12px;
+      font-size: 1.02rem;
+      color: #617709;
+      font-weight: 400;
+    }
+    .tips {
+      font-size: .96rem;
+      color: #495f8f;
+      margin-top: 12px;
+      margin-bottom: 3px;
+      background: #e6eeff;
+      padding: 8px 11px;
+      border-radius: 12px;
+    }
+    @media (max-width: 500px) {
+      .container { 
+        padding:14px 2vw 20px 2vw;
+        border-radius: 0;
+        min-height: 100vh;
+      }
+      .header h1 {
+        font-size: 1.12rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AI 스마트 홈 제어</h1>
+      <p>음성 인식으로 <b>홈 IoT</b>를 쉽고 자동으로!<br>바쁜 맞벌이 부부의 삶을 스마트하게 지원합니다.</p>
+    </div>
+
+    <div class="voice-section">
+      <button id="voiceBtn" class="voice-btn" title="음성 명령 시작">
+        <span id="micIcon">&#127908;</span>
+      </button>
+      <div class="voice-status" id="voiceStatus">음성 명령을 시작하려면 클릭하세요</div>
+    </div>
+
+    <div class="devices-list">
+      <h3 style="color:#395886;font-size:1.04rem;">내장 기기 제어</h3>
+      <div class="device-row">
+        <span class="device-name">거실 조명</span>
+        <input type="checkbox" class="device-toggle" id="device-light">
+      </div>
+      <div class="device-row">
+        <span class="device-name">에어컨</span>
+        <input type="checkbox" class="device-toggle" id="device-ac">
+      </div>
+      <div class="device-row">
+        <span class="device-name">청소기</span>
+        <input type="checkbox" class="device-toggle" id="device-cleaner">
+      </div>
+    </div>
+
+    <div class="schedule-section">
+      <h3 style="color:#395886;font-size:1.04rem;">자동 스케줄링</h3>
+      <ul class="schedule-list" id="scheduleList"></ul>
+      <form class="add-schedule-form" id="scheduleForm" autocomplete="off">
+        <select id="scheduleDevice">
+          <option value="light">거실 조명</option>
+          <option value="ac">에어컨</option>
+          <option value="cleaner">청소기</option>
+        </select>
+        <select id="scheduleAction">
+          <option value="on">켜기</option>
+          <option value="off">끄기</option>
+        </select>
+        <input type="time" id="scheduleTime" required>
+        <button type="submit">추가</button>
+      </form>
+    </div>
+
+    <div class="energy-section">
+      <h3>에너지 절약 모니터링</h3>
+      <div class="energy-stats">
+        <span id="energyUse">17.3</span><span class="energy-saved">kWh (오늘)</span>
+      </div>
+      <div id="energyTip" class="tips">에너지를 절약하려면 사용하지 않는 기기는 꼭 꺼주세요!</div>
+    </div>
+  </div>
+
+  <script>
+    // 연결된 가전 제품 상태 관리
+    let devices = {
+      light: false,
+      ac: false,
+      cleaner: false
+    };
+
+    // 에너지 사용량 시뮬레이터
+    let baseEnergy = 17.3; // kWh 오늘 기준(가상)
+    let energySaved = 0;
+
+    // 음성 인식 지원 브라우저 확인 및 초기 세팅
+    const voiceBtn = document.getElementById('voiceBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    const micIcon = document.getElementById('micIcon');
+
+    // 스케줄 관리
+    let schedules = JSON.parse(localStorage.getItem('aiHomeSchedules') || '[]');
+    let scheduleTimeouts = [];
+
+    const deviceElements = {
+      light: document.getElementById('device-light'),
+      ac: document.getElementById('device-ac'),
+      cleaner: document.getElementById('device-cleaner')
+    };
+
+    // --- DEVICE TOGGLE ---
+
+    for (const d of Object.keys(deviceElements)) {
+      deviceElements[d].checked = devices[d];
+      deviceElements[d].addEventListener('change', function() {
+        devices[d] = !!this.checked;
+        setEnergyConsumption();
+      });
+    }
+
+    // --- SCHEDULING ---
+    function renderSchedules() {
+      const list = document.getElementById('scheduleList');
+      list.innerHTML = '';
+      schedules.forEach((item, idx) => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${deviceLabel(item.device)} ${item.action==='on'?'켜짐':'꺼짐'}<span style="color:#288">${item.time}</span></span>
+          <span class="remove" title="삭제" data-idx="${idx}">&times;</span>`;
+        list.appendChild(li);
+      });
+      // 삭제 핸들러
+      list.querySelectorAll('.remove').forEach(node => node.onclick = function(){
+        schedules.splice(this.getAttribute('data-idx'),1);
+        saveSchedules();
+      });
+    }
+
+    function deviceLabel(key){
+      return {
+        'light':'거실 조명',
+        'ac':'에어컨',
+        'cleaner':'청소기'
+      }[key];
+    }
+
+    document.getElementById('scheduleForm').onsubmit = function(e){
+      e.preventDefault();
+      const dev = document.getElementById('scheduleDevice').value;
+      const act = document.getElementById('scheduleAction').value;
+      const time = document.getElementById('scheduleTime').value;
+      if (!time) return;
+      schedules.push({ device: dev, action: act, time });
+      saveSchedules();
+    };
+
+    function saveSchedules() {
+      localStorage.setItem('aiHomeSchedules', JSON.stringify(schedules));
+      renderSchedules();
+      applyScheduleTimers();
+    }
+
+    renderSchedules();
+
+    function applyScheduleTimers() {
+      // 클리어 기존 타이머
+      scheduleTimeouts.forEach(clearTimeout);
+      scheduleTimeouts = [];
+
+      const now = new Date();
+
+      schedules.forEach((item, idx) => {
+        const [h, m] = item.time.split(':').map(Number);
+        // 오늘 예정 시간으로 세팅
+        let trig = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0, 0);
+        if (trig < now) trig.setDate(trig.getDate() + 1); // 이미 지났으면 내일로
+
+        const ms = trig - now;
+        if (ms<86400000) // 24h내
+          scheduleTimeouts.push(setTimeout(()=>{
+            devices[item.device] = (item.action==='on');
+            deviceElements[item.device].checked = devices[item.device];
+            setEnergyConsumption();
+            saveSchedules(); // 다음날로 예약 갱신
+          }, ms));
+      });
+    }
+    applyScheduleTimers();
+
+    // --- 에너지 모니터링 ---
+    function setEnergyConsumption(){
+      // 단순 시뮬: 기기 별 켜짐, OFF당 절약량 계산
+      let used = baseEnergy;
+      energySaved = 0;
+      if (!devices.light) {used-=2.1; energySaved+=2.1;}
+      if (!devices.ac) {used-=7.5; energySaved+=7.5;}
+      if (!devices.cleaner) {used-=1.2; energySaved+=1.2;}
+      document.getElementById('energyUse').textContent = used.toFixed(1);
+      // 팁 강조
+      let tip = "";
+      if (energySaved >= 8)
+        tip = "👏 오늘 강력하게 에너지를 절약하고 있어요! 계속 유지해보세요!";
+      else if (energySaved >= 4)
+        tip = "좋아요! 조금만 더 기기 사용을 줄이면 더 큰 절약이 가능해요.";
+      else
+        tip = "에너지를 절약하려면 사용하지 않는 기기는 꼭 꺼주세요!";
+      document.getElementById('energyTip').textContent = tip;
+    }
+    setEnergyConsumption();
+
+    // - SCHEDULE도 기기 변경시 반영
+    Object.values(deviceElements).forEach(ele=>{
+      ele.addEventListener('change', setEnergyConsumption)
+    });
+
+    // --- 음성 인식 ---
+    let rec;
+    let recognizing = false;
+    let supported = false;
+
+    function showVoiceStatus(msg, isError=false){
+      voiceStatus.textContent = msg;
+      voiceStatus.style.color = isError ? "#c93030" : "#5470ff";
+    }
+
+    function aiCommand(cmd){
+      // 자연어 명령어 해석 (간단한 한글 패턴/케이스만 시연)
+      cmd = cmd.trim().replace(/\s+/g,' ').toLowerCase();
+      let matched = false;
+
+      // 1: 기기 ON/OFF (예: "거실 조명 켜줘", "에어컨 꺼")
+      [
+        {words:["거실 조명","조명","불"], dev:"light"},
+        {words:["에어컨","cooler","에어콘"], dev:"ac"},
+        {words:["청소기","청소"], dev:"cleaner"}
+      ].forEach(map=>{
+        map.words.forEach(word=>{
+          if (cmd.includes(word) && /(켜|on)/.test(cmd)) {
+            devices[map.dev]=true;
+            deviceElements[map.dev].checked = true;
+            matched = true;
+            showVoiceStatus(`"${deviceLabel(map.dev)}"을(를) 켰어요`, false);
+          }
+          if (cmd.includes(word) && /(꺼|off)/.test(cmd)) {
+            devices[map.dev]=false;
+            deviceElements[map.dev].checked = false;
+            matched = true;
+            showVoiceStatus(`"${deviceLabel(map.dev)}"을(를) 껐어요`, false);
+          }
+        });
+      });
+
+      // 2: 스케줄 설정 ("에어컨 19시 05분에 꺼줘")
+      let schMatch = cmd.match(/(조명|에어컨|청소기).*\b([01]?\d|2[0-3])시\s?([0-5]?\d)?분?.*(켜|꺼)/);
+      if (schMatch) {
+        let dev, act;
+        if (schMatch[1].includes("에어컨")) dev = "ac";
+        else if (schMatch[1].includes("조명")) dev = "light";
+        else dev = "cleaner";
+        act = schMatch[4].includes("켜") ? "on" : "off";
+        let hh = schMatch[2].toString().padStart(2,'0');
+        let mm = (schMatch[3]||'00').toString().padStart(2,'0');
+        schedules.push({ device:dev, action:act, time: `${hh}:${mm}` });
+        saveSchedules();
+        matched = true;
+        showVoiceStatus(`${deviceLabel(dev)}을(를) ${hh}시${mm}분에 ${act=="on"?"켜는":"끄는"} 예약을 등록했습니다`);
+      }
+
+      // 3: 전력/에너지질문 ("에너지 얼마나 절약했어" 등)
+      if (/에너지|절약|전기|전력/.test(cmd)) {
+        matched = true;
+        showVoiceStatus(`금일 ${energySaved.toFixed(1)}kWh를 아껴 썼어요!`, false);
+      }
+
+      if (!matched)
+        showVoiceStatus('죄송합니다, 해당 명령을 인식하지 못했어요.', true);
+
+      setEnergyConsumption();
+    }
+
+    function startRecognition(){
+      if (!supported) {
+        showVoiceStatus("⚠️ 이 브라우저는 음성인식을 지원하지 않습니다.", true);
+        return;
+      }
+      rec.lang="ko-KR";
+      rec.start();
+      recognizing = true;
+      voiceBtn.classList.add('listening');
+      micIcon.textContent = "🎤";
+      showVoiceStatus("듣고 있어요… 말씀해 주세요");
+    }
+    function stopRecognition(){
+      if (supported && recognizing) rec.stop();
+      recognizing = false;
+      voiceBtn.classList.remove('listening');
+      micIcon.textContent = "🎤";
+      showVoiceStatus("음성 명령을 시작하려면 클릭하세요");
+    }
+
+    // --- 음성 인식 초기화 
+    window.onload = function() {
+      if ('webkitSpeechRecognition' in window) {
+        supported = true;
+        rec = new webkitSpeechRecognition();
+      } else if ('SpeechRecognition' in window) {
+        supported = true;
+        rec = new SpeechRecognition();
+      } else {
+        supported = false;
+        showVoiceStatus("⚠️ 이 브라우저는 음성인식을 지원하지 않습니다.", true);
+      }
+      if (supported) {
+        rec.continuous = false;
+        rec.interimResults = false;
+
+        rec.onstart = function() {
+          recognizing = true;
+          voiceBtn.classList.add('listening');
+          micIcon.textContent = "🎤";
+          showVoiceStatus("듣고 있어요…");
+        };
+        rec.onend = function() {
+          recognizing = false;
+          voiceBtn.classList.remove('listening');
+          micIcon.textContent = "🎤";
+          if(!rec.finalResult) showVoiceStatus("음성 명령을 시작하려면 클릭하세요");
+        };
+        rec.onerror = function(e) {
+          recognizing = false;
+          voiceBtn.classList.remove('listening');
+          showVoiceStatus("음성 인식 오류: " + e.error, true);
+        };
+        rec.onresult = function(event) {
+          let transcript = '';
+          for (let i = event.resultIndex; i < event.results.length; ++i)
+            transcript += event.results[i][0].transcript;
+          transcript = transcript.trim();
+          if (transcript) {
+            aiCommand(transcript);
+            rec.finalResult = true;
+          }
+        };
+      }
+    };
+
+    voiceBtn.onclick = function(){
+      if (!recognizing) startRecognition();
+      else stopRecognition();
+    };
+  </script>
+</body>
+</html>
