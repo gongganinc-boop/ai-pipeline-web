@@ -1,0 +1,225 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>대표이사 테스트 문자</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      background: #f9f9fa;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .main-container {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+      max-width: 425px;
+      width: 100%;
+      margin: 56px 0 0 0;
+      padding: 36px 32px 28px 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.8em;
+      color: #203040;
+      margin: 0 0 18px 0;
+    }
+    p.desc {
+      text-align: center;
+      color: #555;
+      font-size: 1.08em;
+      margin-bottom: 22px;
+    }
+    .input-group {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    label {
+      font-size: 1em;
+      color: #334;
+      margin-left: 2px;
+    }
+    input[type="text"], textarea {
+      border: 1px solid #d0d4dc;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 1em;
+      box-sizing: border-box;
+      resize: none;
+      transition: border 0.15s;
+      width: 100%;
+    }
+    input[type="text"]:focus, textarea:focus {
+      border-color: #2979ff;
+      outline: none;
+    }
+    button {
+      background: #2979ff;
+      color: #fff;
+      padding: 12px 0;
+      border-radius: 6px;
+      font-size: 1.14em;
+      letter-spacing: 1px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 12px;
+      transition: background 0.18s;
+    }
+    button:hover, button:focus { background: #1965d6; }
+
+    .result-container {
+      margin-top: 30px;
+      background: #f3f9ff;
+      border: 1px solid #c7e0ff;
+      border-radius: 8px;
+      padding: 20px 16px;
+      min-height: 60px;
+      color: #203047;
+      font-size: 1.1em;
+      line-height: 1.7;
+      white-space: pre-line;
+      word-break: break-all;
+      display: none;
+      position: relative;
+      box-sizing: border-box;
+    }
+    .copy-btn {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      color: #2979ff;
+      background: #eaf3ff;
+      border: none;
+      padding: 4px 13px;
+      font-size: 0.96em;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background 0.13s;
+    }
+    .copy-btn:hover {
+      background: #cfe4ff;
+    }
+    .copied {
+      font-size: 0.96em;
+      color: #28b14c;
+      margin-left: 7px;
+      font-weight: bold;
+    }
+    @media (max-width: 499px) {
+      .main-container { padding: 20px 8px; margin-top: 24px; }
+      h1 { font-size: 1.35em;}
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <h1>대표이사 테스트 문자 생성기</h1>
+    <p class="desc">
+      수신인 이름을 입력하면 <br> 간결하고 신뢰감 있는 대표이사 인증 테스트 문자를 만들어줍니다.<br>
+      <span style="color:#2979ff;font-weight:500;">간단히 복사해서 사용해보세요!</span>
+    </p>
+    <form id="smsForm" autocomplete="off">
+      <div class="input-group">
+        <label for="targetName">수신인 이름 또는 부서 <span style="color:#e24444;">*</span></label>
+        <input id="targetName" type="text" maxlength="16" placeholder="예) 홍길동, 마케팅팀" required autocomplete="off"/>
+      </div>
+      <div class="input-group">
+        <label for="companyName">회사명 (선택)</label>
+        <input id="companyName" type="text" maxlength="32" placeholder="예) 새싹전자, (주)한국미디어" autocomplete="off"/>
+      </div>
+      <div class="input-group">
+        <label for="ceoName">대표이사 이름 (선택)</label>
+        <input id="ceoName" type="text" maxlength="16" placeholder="예) 김대표, 박지은" autocomplete="off"/>
+      </div>
+      <button type="submit" id="generateBtn">테스트 문자 만들기</button>
+    </form>
+    <div class="result-container" id="resultBox">
+      <button class="copy-btn" id="copyBtn">복사</button>
+      <span id="smsText"></span>
+      <span class="copied" id="copiedMsg" style="display:none;">복사됨!</span>
+    </div>
+  </div>
+  <script>
+    function escapeHTML(str) {
+      return str.replace(/[<>&"'`]/g, function(c) {
+        return ({
+          "<":"&lt;","&":"&amp;",">":"&gt;","\"":"&quot;","'":"&#39;","`":"&#96;"
+        })[c];
+      });
+    }
+
+    function createSMS(target, company, ceo) {
+      target = target.trim();
+      company = company.trim();
+      ceo = ceo.trim();
+
+      // 기본 메시지
+      let first = `[테스트 문자]`;
+      let toLine = target ? `${target}님께 전송되는<br>` : '';
+      let companyLine = company ? `${company} ` : '';
+      let ceoLine = ceo ? `대표이사 ${ceo}의 테스트입니다.` : '대표이사 테스트 문자입니다.';
+
+      let tail = `\n\n본 메시지는 실제 업무 목적이 아닌 테스트용 임시 발송 문자입니다.`;
+
+      // (회사명 있으면 앞에, 없으면 회사명 생략)
+      let msg = `${first}\n${toLine}${companyLine}${ceoLine}${tail}`;
+      // 문자 제한(90~110자) 맞추기 위해 줄이기
+      if(msg.length > 110) {
+        msg = msg.replace('본 메시지는 실제 업무 목적이 아닌 테스트용 임시 발송 문자입니다.',"본 문자는 테스트용입니다.");
+      }
+      return msg;
+    }
+
+    document.getElementById('smsForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      let target = document.getElementById('targetName').value;
+      let company = document.getElementById('companyName').value;
+      let ceo = document.getElementById('ceoName').value;
+
+      if(!target.trim()){
+        alert('수신인 이름(또는 부서)을 입력해주세요!');
+        document.getElementById('targetName').focus(); return;
+      }
+
+      let msg = createSMS(escapeHTML(target), escapeHTML(company), escapeHTML(ceo));
+      // <br>로 변경
+      msg = msg.replace(/\n/g, '\n');
+      document.getElementById('smsText').innerHTML = msg.replace(/<br>/g, '\n').replace(/\n/g, '<br>');
+
+      document.getElementById('resultBox').style.display = 'block';
+      document.getElementById('copiedMsg').style.display = 'none';
+    });
+
+    document.getElementById('copyBtn').addEventListener('click', function(){
+      let html = document.getElementById('smsText').innerHTML.replace(/<br\s*\/?>/gi, '\n');
+      navigator.clipboard.writeText(html).then(function(){
+        let copiedEl = document.getElementById('copiedMsg');
+        copiedEl.style.display = 'inline';
+        setTimeout(function(){ copiedEl.style.display = 'none'; }, 1600);
+      });
+    });
+
+    // 엔터키로도 바로 동작
+    document.getElementById('targetName').addEventListener('keydown', function(ev){
+      if(ev.key=='Enter'){ev.preventDefault();document.getElementById('generateBtn').click();}
+    });
+    document.getElementById('companyName').addEventListener('keydown', function(ev){
+      if(ev.key=='Enter'){ev.preventDefault();document.getElementById('generateBtn').click();}
+    });
+    document.getElementById('ceoName').addEventListener('keydown', function(ev){
+      if(ev.key=='Enter'){ev.preventDefault();document.getElementById('generateBtn').click();}
+    });
+  </script>
+</body>
+</html>
