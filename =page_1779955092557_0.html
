@@ -1,0 +1,317 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>레스토랑 메뉴 메이커</title>
+  <style>
+    body {
+      background: #f8f6f2;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: #fff9ee;
+      border-radius: 16px;
+      box-shadow: 0 8px 28px 0 rgba(80,60,30,0.09);
+      padding: 36px 30px 30px 30px;
+    }
+    h1 {
+      text-align: center;
+      color: #bf7400;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+    .form-section {
+      border-bottom: 1px solid #f2e2be;
+      padding-bottom: 22px;
+      margin-bottom: 32px;
+    }
+    label {
+      display: block;
+      margin-top: 14px;
+      color: #603200;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      font-size:1em;
+      margin-top: 4px;
+      padding: 7px;
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #e2cfa9;
+      border-radius: 6px;
+      background: #fffdfa;
+      margin-bottom: 5px;
+    }
+    .category-select {
+      width: 30%;
+      display: inline-block;
+      margin-right:10px;
+    }
+    .menu-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 26px;
+      background: #fffdf7;
+    }
+    .menu-table th, .menu-table td {
+      text-align: left;
+      padding: 11px 8px;
+      border-bottom: 1px solid #f0dfb3;
+    }
+    .menu-table th {
+      background: #ffefcc;
+      color: #9d6d00;
+      font-size:1.06em;
+    }
+    .menu-table td.option-list {
+      font-size: 0.98em;
+      color: #8a6842;
+    }
+    .category-title {
+      margin: 24px 0 6px 0;
+      padding-left: 3px;
+      color: #be8402;
+      font-weight: bold;
+      font-size: 1.17em;
+      border-left: 5px solid #ffe4ae;
+      letter-spacing:1px;
+      background: none;
+    }
+    .add-option-btn, .add-menu-btn {
+      background: #fecc66;
+      color: #684800;
+      border: none;
+      font-weight: bold;
+      padding: 6px 13px;
+      margin-top: 10px;
+      margin-bottom: 0;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size:1em;
+      transition: background 0.13s;
+    }
+    .add-menu-btn {
+      background: #e17700;
+      color: #fff;
+      float: right;
+      box-shadow: 0 2px 9px #ffedb8a2;
+      margin-left:10px;
+    }
+    .add-option-btn:hover, .add-menu-btn:hover {
+      background: #ffc222;
+    }
+    .option-remove-btn {
+      background: #ffa374;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      margin-left: 7px;
+      font-size: 0.9em;
+      padding:2px 8px;
+      cursor: pointer;
+      vertical-align: middle;
+    }
+    .delete-btn {
+      background: #d9573a;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 11px;
+      cursor: pointer;
+      transition: background 0.15s;
+      font-size:0.98em;
+    }
+    .delete-btn:hover {
+      background: #b34122;
+    }
+    .menu-section {
+      margin-top:12px;
+    }
+    @media (max-width: 600px) {
+      .container {padding: 6vw 2vw;}
+      .category-select, input[type="number"], input {width:97%;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🍽️ 레스토랑 메뉴 메이커</h1>
+    <div class="form-section">
+      <form id="menuForm" autocomplete="off">
+        <label>카테고리
+          <select id="category" class="category-select" required>
+            <option value="">선택하세요</option>
+            <option value="애피타이저">애피타이저</option>
+            <option value="메인요리">메인요리</option>
+            <option value="디저트">디저트</option>
+            <option value="음료">음료</option>
+            <option value="기타">기타</option>
+          </select>
+        </label>
+        <label>메뉴 이름 <input type="text" id="name" maxlength="25" placeholder="예: 씨저 샐러드" required></label>
+        <label>설명 <textarea id="description" maxlength="120" rows="2" placeholder="간단한 메뉴 설명 (선택)"></textarea></label>
+        <label>가격 (₩) <input type="number" id="price" min="0" max="1000000" step="100" placeholder="예: 12000" required></label>
+        <label>옵션 추가
+          <div id="optionsArea"></div>
+          <button type="button" class="add-option-btn" onclick="addOptionField()">+ 옵션 추가</button>
+        </label>
+        <button type="submit" class="add-menu-btn">메뉴 추가</button>
+        <div style="clear:both;"></div>
+      </form>
+    </div>
+    <div class="menu-section" id="menuSection">
+      <!-- 메뉴 항목이 여기에 표시됩니다 -->
+    </div>
+  </div>
+  <script>
+    // 메뉴 데이터 (카테고리별 메뉴 보관)
+    let menus = {};
+
+    // 옵션 입력 필드 추가
+    function addOptionField(value="") {
+      const area = document.getElementById('optionsArea');
+      const optionDiv = document.createElement('div');
+      optionDiv.style.marginBottom = "5px";
+      optionDiv.style.display = "flex";
+      optionDiv.style.alignItems = "center";
+
+      const input = document.createElement('input');
+      input.type = "text";
+      input.maxLength = 22;
+      input.placeholder = "예: 치즈 추가 (+₩1000)";
+      input.value = value;
+      input.style.flex = "1";
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = "button";
+      removeBtn.className = "option-remove-btn";
+      removeBtn.innerText = "삭제";
+      removeBtn.onclick = () => area.removeChild(optionDiv);
+
+      optionDiv.appendChild(input);
+      optionDiv.appendChild(removeBtn);
+
+      area.appendChild(optionDiv);
+    }
+
+    // 메뉴 추가 처리
+    document.getElementById('menuForm').onsubmit = function(e) {
+      e.preventDefault();
+      const category = document.getElementById('category').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const desc = document.getElementById('description').value.trim();
+      const price = parseInt(document.getElementById('price').value, 10);
+      const optionDivs = document.getElementById('optionsArea').querySelectorAll('div');
+      let options = [];
+      optionDivs.forEach(div => {
+        let val = div.querySelector('input').value.trim();
+        if(val) options.push(val);
+      });
+
+      if(!category || !name || isNaN(price) || price<0) {
+        alert("필수 항목을 올바르게 입력해 주세요.");
+        return;
+      }
+      if(!menus[category]) menus[category]=[];
+      menus[category].push({ name, desc, price, options });
+
+      // 입력칸 리셋
+      this.reset();
+      document.getElementById('optionsArea').innerHTML = "";
+      updateMenuDisplay();
+    };
+
+    // 메뉴 테이블 갱신
+    function updateMenuDisplay() {
+      const section = document.getElementById('menuSection');
+      section.innerHTML = "";
+      const categoryOrder = ["애피타이저", "메인요리", "디저트", "음료", "기타"];
+      let empty = true;
+
+      categoryOrder.forEach(category => {
+        const items = menus[category];
+        if(!items || items.length===0) return;
+        empty = false;
+
+        // 카테고리 제목
+        const catTitle = document.createElement('div');
+        catTitle.className = 'category-title';
+        catTitle.innerText = category;
+        section.appendChild(catTitle);
+
+        // 메뉴 테이블
+        const table = document.createElement('table');
+        table.className = 'menu-table';
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
+        ['이름', '설명', '가격', '옵션', ''].forEach(h => {
+          const th=document.createElement('th');
+          th.innerText = h;
+          headerRow.appendChild(th)
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
+        const tbody = document.createElement('tbody');
+        items.forEach((item, idx) => {
+          const tr = document.createElement('tr');
+          // 이름
+          const tdName = document.createElement('td');
+          tdName.innerText = item.name;
+          tr.appendChild(tdName);
+          // 설명
+          const tdDesc = document.createElement('td');
+          tdDesc.innerText = item.desc;
+          tr.appendChild(tdDesc);
+          // 가격
+          const tdPrice = document.createElement('td');
+          tdPrice.innerText = `₩${item.price.toLocaleString()}`;
+          tr.appendChild(tdPrice);
+          // 옵션
+          const tdOpt = document.createElement('td');
+          tdOpt.className = "option-list";
+          tdOpt.innerHTML = item.options.length ? item.options.map(op=>`<li>${op}</li>`).join('') : "<span style='color:#bbb;'>-</span>";
+          tr.appendChild(tdOpt);
+          // 삭제 버튼
+          const tdDel = document.createElement('td');
+          const delBtn = document.createElement('button');
+          delBtn.className = "delete-btn";
+          delBtn.type = "button";
+          delBtn.innerText = "삭제";
+          delBtn.onclick = function() { deleteMenu(category, idx); };
+          tdDel.appendChild(delBtn);
+          tr.appendChild(tdDel);
+
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        section.appendChild(table);
+      });
+
+      if(empty) {
+        section.innerHTML = `<div style="text-align:center;color:#cab17b;margin-top:12px;">
+          아직 메뉴가 없습니다. <br>위 폼에서 메뉴를 추가해보세요!
+        </div>`;
+      }
+    }
+
+    function deleteMenu(category, idx) {
+      if(confirm("이 메뉴를 삭제할까요?")) {
+        menus[category].splice(idx, 1);
+        updateMenuDisplay();
+      }
+    }
+
+    // 시작시 메뉴 표시
+    updateMenuDisplay();
+
+    // 최초 옵션 한 칸 제공
+    window.onload = function() {
+      addOptionField();
+    };
+  </script>
+</body>
+</html>
