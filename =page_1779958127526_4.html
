@@ -1,0 +1,416 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>스마트 홈 IoT 통합 관리 앱</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --main-bg: #f4f6fb;
+      --accent: #2042a6;
+      --button: #3578e5;
+      --success: #33bb77;
+      --danger: #de4343;
+      --card-bg: #fff;
+      --shadow: 0 2px 8px rgba(32,66,166,0.08);
+      --gray: #80889f;
+    }
+    body {
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--main-bg);
+      color: #222;
+    }
+    header {
+      background: var(--accent);
+      color: #fff;
+      padding: 1.5rem 0 1rem 0;
+      text-align: center;
+      box-shadow: var(--shadow);
+      margin-bottom: 2rem;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.1rem;
+      font-weight: 500;
+      letter-spacing: -1px;
+    }
+    main {
+      max-width: 950px;
+      margin: auto;
+      padding: 0 1rem 3rem 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+    }
+    .devices, .energy {
+      flex: 1 1 350px;
+      background: var(--card-bg);
+      padding: 2rem 1.5rem 1.5rem 1.5rem;
+      border-radius: 17px;
+      box-shadow: var(--shadow);
+      min-width: 310px;
+      min-height: 380px;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 1.2rem;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+    .device-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .device {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 0.5rem;
+      border-bottom: 1px solid #f0f0f5;
+    }
+    .device:last-child {
+      border-bottom: none;
+    }
+    .device-info {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .device-icon {
+      font-size: 1.67rem;
+    }
+    .device-name {
+      font-weight: 500;
+      letter-spacing: -0.5px;
+    }
+    .device-status {
+      font-size: 0.97rem;
+      color: var(--gray);
+      margin-top: 3px;
+    }
+    .toggle-btn {
+      min-width: 54px;
+      height: 30px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: var(--button);
+      color: #fff;
+      font-weight: 500;
+      outline: none;
+      transition: background 0.18s;
+      font-size: 1.1rem;
+    }
+    .toggle-btn.on {
+      background: var(--success);
+    }
+    .toggle-btn.off {
+      background: var(--danger);
+    }
+    .energy-chart-container {
+      width: 100%;
+      margin: 1.3rem 0 1.7rem 0;
+      text-align: center;
+    }
+    #energyChart {
+      width: 95%;
+      max-width: 330px;
+      height: 160px;
+    }
+    .summary {
+      margin-bottom: 0.3rem;
+      color: #3f4666;
+      font-size: 1rem;
+    }
+    .energy-cards {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.3rem;
+    }
+    .energy-card {
+      flex: 1 1 90px;
+      background: #f7fbff;
+      border: 1px solid #dde5ff;
+      padding: 0.7rem 0.9rem;
+      border-radius: 11px;
+      text-align: center;
+      font-size: 0.95rem;
+      min-width: 82px;
+      box-shadow: 0 1px 4px rgba(32,66,166,0.03);
+    }
+    .energy-card strong {
+      font-size: 1.13rem;
+      color: var(--accent);
+    }
+    @media (max-width: 900px) {
+      main {
+        flex-direction: column;
+        gap: 2.5rem;
+        padding-bottom: 1rem;
+      }
+      .devices, .energy {
+        min-width: 0;
+        width: 100%;
+      }
+      #energyChart {
+        max-width: 100%;
+        width: 98%;
+      }
+    }
+    footer {
+      margin-top: 1.8rem;
+      text-align: center;
+      color: #aaa;
+      font-size: 1rem;
+      padding-bottom: 0.6rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>스마트 홈 IoT 통합 관리</h1>
+    <div style="margin-top:8px; font-size:1.05rem; color:#bbc8ea;">
+      아파트 전자기기 원격제어 · 에너지 사용량 분석
+    </div>
+  </header>
+  <main>
+    <section class="devices">
+      <div class="section-title">📱 내 IoT 기기 제어</div>
+      <ul class="device-list" id="deviceList">
+        <!-- JS에서 기기 목록 생성 -->
+      </ul>
+    </section>
+    <section class="energy">
+      <div class="section-title">⚡ 에너지 사용량 분석</div>
+      <div class="summary" id="summaryText"></div>
+      <div class="energy-chart-container">
+        <canvas id="energyChart"></canvas>
+      </div>
+      <div class="energy-cards" id="energyCards">
+        <!-- 일간, 월간, 예상금액 카드 (JS로 생성) -->
+      </div>
+    </section>
+  </main>
+  <footer>
+    &copy; 2024 스마트 홈 IoT 통합 관리
+  </footer>
+  <script>
+    // IoT 디바이스 목록 샘플
+    const devices = [
+      {
+        name: '거실 조명',
+        icon: '💡',
+        type: 'light',
+        status: true,
+        energyPerHour: 0.06 // kWh
+      },
+      {
+        name: '에어컨',
+        icon: '❄️',
+        type: 'aircon',
+        status: false,
+        energyPerHour: 1.1 // kWh
+      },
+      {
+        name: '보일러',
+        icon: '🔥',
+        type: 'boiler',
+        status: false,
+        energyPerHour: 0.82 // kWh
+      },
+      {
+        name: '공기청정기',
+        icon: '🌬️',
+        type: 'purifier',
+        status: true,
+        energyPerHour: 0.04 // kWh
+      },
+      {
+        name: '세탁기',
+        icon: '🧺',
+        type: 'washer',
+        status: false,
+        energyPerHour: 0.56 // kWh(1회당)
+      }
+    ];
+
+    // 7일치 에너지 사용량(임의 데이터, 단위 kWh)
+    let chartData = [9.2, 8.7, 10.4, 12.0, 11.2, 13.3, 12.6];
+    const chartLabels = ['월', '화', '수', '목', '금', '토', '일'];
+
+    // 전기요금 단가 (2024년 기준 약 117.3원/kWh)
+    const ELECTRICITY_RATE = 117.3; // (예시)
+
+    // 기기 HTML 생성
+    function renderDevices() {
+      const list = document.getElementById('deviceList');
+      list.innerHTML = '';
+      devices.forEach((d, idx) => {
+        const li = document.createElement('li');
+        li.className = 'device';
+        li.innerHTML = `
+          <span class="device-info">
+            <span class="device-icon">${d.icon}</span>
+            <span>
+              <span class="device-name">${d.name}</span><br>
+              <span class="device-status">${d.status ? '작동 중' : '꺼짐'}</span>
+            </span>
+          </span>
+          <button class="toggle-btn ${d.status ? 'on' : 'off'}" aria-pressed="${d.status}" data-idx="${idx}">
+            ${d.status ? 'OFF' : 'ON'}
+          </button>
+        `;
+        list.appendChild(li);
+      });
+      // 버튼 이벤트 바인딩
+      document.querySelectorAll('.toggle-btn').forEach(btn => {
+        btn.onclick = function() {
+          const idx = Number(this.dataset.idx);
+          devices[idx].status = !devices[idx].status;
+          // 세탁기는 작동/꺼짐 → 1회 세탁(1시간)
+          if(devices[idx].type === 'washer' && devices[idx].status) {
+            // 사용량 반영 (즉시)
+            increaseUsageToday(devices[idx].energyPerHour);
+            setTimeout(() => {
+              devices[idx].status = false;
+              renderDevices();
+            }, 1800); // 잠깐 후 자동꺼짐 (시뮬레이션용)
+          } else if(devices[idx].type !== 'washer') {
+            // 사용량 반영 (1시간 가동 가정, 시뮬레이션)
+            if(devices[idx].status) increaseUsageToday(devices[idx].energyPerHour);
+          }
+          renderDevices();
+          updateEnergyCards();
+        }
+      });
+    }
+
+    // 오늘 사용량에 즉시 반영
+    function increaseUsageToday(kwh){
+      chartData[6] = Number((chartData[6] + kwh).toFixed(2));
+      drawChart();
+    }
+
+    // 에너지 카드 및 요약 정보 표시
+    function updateEnergyCards() {
+      // 일간, 7일평균, 월간, 예상 요금
+      const today = chartData[6];
+      const avg7 = chartData.reduce((a,b)=>a+b,0)/7;
+      const month = avg7 * 30;
+      const cost = Math.round(month * ELECTRICITY_RATE);
+      // 카드
+      const parent = document.getElementById('energyCards');
+      parent.innerHTML = `
+        <div class="energy-card">
+          오늘<br><strong>${today.toFixed(2)} kWh</strong>
+        </div>
+        <div class="energy-card">
+          일주일 평균<br><strong>${avg7.toFixed(2)} kWh</strong>
+        </div>
+        <div class="energy-card">
+          월간예상<br><strong>${month.toFixed(1)} kWh</strong>
+        </div>
+        <div class="energy-card">
+          월간요금<br><strong>${cost.toLocaleString()}원</strong>
+        </div>
+      `;
+      // 요약 텍스트
+      let tips = '';
+      if(avg7 > 12) tips = "⚠️ 지난주 평균 사용량이 높은 편입니다. 에너지 절약을 실천해보세요!";
+      else if(avg7 < 9) tips = "👍 훌륭해요! 평균 사용량이 적정 수준입니다.";
+      else tips = "적정 수준의 에너지 사용입니다. 꾸준한 관리로 절약해보세요!";
+      document.getElementById('summaryText').textContent = tips;
+    }
+
+    // 미니 차트 그리기 (Canvas)
+    function drawChart() {
+      const canvas = document.getElementById('energyChart');
+      const ctx = canvas.getContext('2d');
+      // 사이즈 반응형 조정
+      const dpr = window.devicePixelRatio || 1;
+      const width = canvas.parentNode.offsetWidth * dpr * 0.99;
+      const height = 160 * dpr;
+      canvas.width = width; canvas.height = height;
+      canvas.style.width = (width/dpr) + 'px';
+      canvas.style.height = (height/dpr) + 'px';
+      // 배경
+      ctx.clearRect(0,0,width,height);
+      ctx.fillStyle = "#f8fafd";
+      ctx.fillRect(0,0,width,height);
+
+      // Y축(사용량) 구간
+      const max = Math.max(...chartData, 16);
+      const min = Math.min(...chartData, 0);
+      const y0 = height*0.81, y1 = height*0.12;
+      const chartHeight = y0 - y1;
+      // X축
+      const dx = width/(chartData.length+1);
+      // 그리드선
+      ctx.strokeStyle="#e4e9f7"; ctx.lineWidth=1;
+      for(let i=0;i<=3;i++) {
+        const yy = y1 + (chartHeight/3)*i;
+        ctx.beginPath();
+        ctx.moveTo(dx*0.7, yy);
+        ctx.lineTo(width-dx*0.4, yy);
+        ctx.stroke();
+        // Y축 수치
+        ctx.font = `bold ${height>200?15:12}px sans-serif`;
+        ctx.fillStyle="#a7adb9";
+        const val = (max - (max-min)*i/3).toFixed(1);
+        ctx.fillText(val+'k', 2, yy+4);
+      }
+      // 꺾은선
+      ctx.strokeStyle = "#2042a6";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      chartData.forEach((d, i) => {
+        const x = dx*(i+1);
+        const y = y0 - ((d-min)/(max-min))*chartHeight;
+        if(i===0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      // 점 표시+요일
+      chartData.forEach((d,i)=>{
+        const x = dx*(i+1);
+        const y = y0 - ((d-min)/(max-min))*chartHeight;
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI*2);
+        ctx.closePath();
+        ctx.fillStyle=i===6?"#3578e5":"#fff";
+        ctx.fill();
+        ctx.strokeStyle="#3578e5";
+        ctx.lineWidth=2;
+        ctx.stroke();
+        // 요일
+        ctx.font = `bold ${height>200?15:12}px sans-serif`;
+        ctx.fillStyle = "#80889f";
+        ctx.textAlign = "center";
+        ctx.fillText(chartLabels[i], x, y0+25);
+      });
+      // 오늘 하이라이트
+      ctx.font = `bold ${height>200?15:12}px sans-serif`;
+      ctx.fillStyle = "#2042a6";
+      ctx.textAlign = "center";
+      ctx.fillText("오늘", dx*7, y0+45);
+    }
+
+    // 초기화
+    function init() {
+      renderDevices();
+      drawChart();
+      updateEnergyCards();
+      window.addEventListener('resize', () => {
+        drawChart();
+      });
+    }
+
+    window.onload = init;
+
+  </script>
+</body>
+</html>
