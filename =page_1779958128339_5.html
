@@ -1,0 +1,292 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>대표이사 테스트 시험중</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
+      background: #f5f7fa;
+      height: 100%;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 420px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 6px 32px rgba(40,50,65,0.07);
+      padding: 42px 30px 32px 30px;
+      box-sizing: border-box;
+    }
+    h1 {
+      margin-top: 0;
+      font-weight: 800;
+      font-size: 2rem;
+      color: #2775ff;
+      text-align: center;
+    }
+    .progress {
+      width: 100%;
+      background: #e5ebf3;
+      border-radius: 10px;
+      margin: 25px 0 28px 0;
+      height: 17px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg,#c6baff 0,#2775ff 100%);
+      width: 0;
+      transition: width 0.4s cubic-bezier(.66,.17,.84,.63);
+    }
+    .question {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #222732;
+      margin: 12px 0 25px 0;
+      min-height: 52px;
+    }
+    .options {
+      margin-bottom: 24px;
+    }
+    .option-btn {
+      display: block;
+      width: 100%;
+      margin: 0 0 14px 0;
+      padding: 14px 17px;
+      background: #f3f6fa;
+      border: 2px solid transparent;
+      border-radius: 7px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #3d4261;
+      cursor: pointer;
+      transition: background 0.19s, border 0.19s, color 0.19s;
+    }
+    .option-btn.selected, .option-btn:active {
+      background: #e6f0ff;
+      border-color: #4b79ff;
+      color: #2775ff;
+    }
+    .option-btn.correct {
+      background: #e4fae4;
+      border-color: #11b87b;
+      color: #177a41;
+    }
+    .option-btn.wrong {
+      background: #ffe6e6;
+      border-color: #ff5247;
+      color: #a20f19;
+    }
+    .next-btn {
+      display: inline-block;
+      background: #2775ff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 13px 44px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 8px 0 0 0;
+      float: right;
+      transition: background 0.18s;
+    }
+    .next-btn:disabled {
+      background: #aac8fc;
+      cursor: not-allowed;
+    }
+    .reset-btn {
+      background: #fff;
+      color: #2775ff;
+      border: 2px solid #2775ff;
+      padding: 10px 26px;
+      font-size: 1rem;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 12px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .result {
+      text-align: center;
+      margin-top: 28px;
+    }
+    .score-badge {
+      display: inline-block;
+      font-size: 2rem;
+      color: #fff;
+      background: linear-gradient(90deg,#2775ff,#649cff 75%);
+      border-radius: 90px;
+      padding: 10px 32px;
+      margin-bottom: 13px;
+      font-weight: 800;
+    }
+    .result-title {
+      font-size: 1.2rem;
+      margin: 20px 0 16px 0;
+      font-weight: 700;
+      color: #2071d5;
+    }
+    .feedback {
+      color: #3d4261;
+      font-size: 1.03rem;
+      margin: 10px 0 0 0;
+    }
+    @media (max-width:600px) {
+      .container {padding: 23px 7vw 20px 7vw;margin:18px auto;}
+      h1{font-size:1.35rem;}
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="main-container">
+    <h1>대표이사 테스트<br>시험중</h1>
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="question" id="question"></div>
+    <form id="quiz-form">
+      <div class="options" id="options"></div>
+      <button type="button" class="next-btn" id="next-btn" disabled>다음</button>
+    </form>
+    <div id="result" style="display: none;"></div>
+  </div>
+  <script>
+    // 문제 리스트
+    const questions = [
+      {
+        q: "대표이사의 주된 역할로 적절한 것은?",
+        options: ["회사의 일상 업무를 직접 수행한다", "회사의 경영 및 대표 업무를 총괄한다", "직원 채용만 담당한다", "회계 업무만 처리한다"],
+        answer: 1
+      },
+      {
+        q: "대표이사에 대한 설명으로 옳지 않은 것은?",
+        options: ["이사회에서 선임될 수 있다", "회사를 대외적으로 대표한다", "모든 법인은 반드시 대표이사가 있어야 한다", "대표이사는 정관으로 정할 수 있다"],
+        answer: 2
+      },
+      {
+        q: "회사의 인감을 찍어 외부 계약을 체결할 권한은 누구에게 있는가?",
+        options: ["대표이사", "감사", "이사", "주주"],
+        answer: 0
+      },
+      {
+        q: "대표이사의 임기(任期)가 만료되면 어떻게 되는가?",
+        options: ["임기가 연장된다", "대표이사는 자동으로 퇴임한다", "새 대표이사를 선임할 때까지 직무를 계속 수행한다", "회사도 자동 해산된다"],
+        answer: 2
+      },
+      {
+        q: "상법상 회사 대표이사의 법적 책임으로 보기 어려운 것은?",
+        options: ["회사채권자에 대한 채무변제 책임", "회사의 업무상 손해에 대한 배상책임", "세무 신고의무", "회사 대표권 행사"],
+        answer: 0
+      }
+    ];
+
+    // 피드백 메시지 (정답률별)
+    function getFeedback(score, total) {
+      const ratio = score/total;
+      if(ratio === 1) return "완벽해요! 대표이사 자격 충분합니다.";
+      if(ratio >= 0.8) return "매우 우수! 대표이사로 손색없네요.";
+      if(ratio >= 0.6) return "합격권! 실무 경험을 더 쌓으면 좋겠어요.";
+      if(ratio >= 0.4) return "아쉽네요. 공부가 필요해요!";
+      return "대표이사 준비가 미흡합니다. 더 노력해 주세요 👀";
+    }
+
+    let current = 0;
+    let selected = null;
+    let userAnswers = [];
+
+    function renderQuestion() {
+      document.getElementById('result').style.display = "none";
+      if(current >= questions.length) {
+        showResult();
+        return;
+      }
+
+      // 진행도
+      const progress = ((current)/questions.length)*100;
+      document.getElementById('progress-bar').style.width = progress+"%";
+      document.getElementById('next-btn').disabled = true;
+      document.getElementById('question').textContent = questions[current].q;
+
+      const optionsDiv = document.getElementById('options');
+      optionsDiv.innerHTML = "";
+      questions[current].options.forEach((opt,i) => {
+        const btn = document.createElement('button');
+        btn.type = "button";
+        btn.className = "option-btn";
+        btn.textContent = opt;
+        btn.setAttribute('data-idx',i);
+        btn.onclick = function() {
+          Array.from(optionsDiv.children).forEach(b=>b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selected = i;
+          document.getElementById('next-btn').disabled = false;
+        };
+        optionsDiv.appendChild(btn);
+      });
+      selected = null;
+    }
+
+    document.getElementById('next-btn').onclick = function() {
+      // 선택한 답 기록
+      userAnswers[current] = selected;
+      // 정답확인
+      const correct = questions[current].answer;
+      const optionsDiv = document.getElementById('options');
+      Array.from(optionsDiv.children).forEach((btn,idx) => {
+        btn.classList.remove('selected');
+        if(idx===correct) btn.classList.add('correct');
+        if(idx===selected && selected!==correct) btn.classList.add('wrong');
+        btn.disabled = true;
+      });
+
+      // 잠시 후 다음 문제로
+      setTimeout(()=>{
+        current++;
+        renderQuestion();
+      }, 650);
+    };
+
+    function showResult() {
+      // 마지막 진행도 100%
+      document.getElementById('progress-bar').style.width = "100%";
+      document.getElementById('quiz-form').style.display = "none";
+      document.getElementById('question').style.display = "none";
+      let score = 0;
+      questions.forEach((q,i) => {
+        if(userAnswers[i]===q.answer) score++;
+      });
+
+      // 결과 화면
+      const resultDiv = document.getElementById('result');
+      let feedback = getFeedback(score, questions.length);
+      let html = `<div class="result">
+        <div class="score-badge">${score} / ${questions.length}</div>
+        <div class="result-title">대표이사 테스트 결과</div>
+        <div class="feedback">${feedback}</div>
+        <button class="reset-btn" onclick="resetQuiz()">다시 시도</button>
+      </div>`;
+      resultDiv.innerHTML = html;
+      resultDiv.style.display = "block";
+    }
+
+    window.resetQuiz = function() {
+      current = 0;
+      selected = null;
+      userAnswers = [];
+      document.getElementById('quiz-form').style.display = "block";
+      document.getElementById('question').style.display = "block";
+      document.getElementById('result').style.display = "none";
+      renderQuestion();
+    };
+
+    // 초기화
+    renderQuestion();
+
+  </script>
+</body>
+</html>
