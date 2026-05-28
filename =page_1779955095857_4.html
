@@ -1,0 +1,346 @@
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>대표이사 테스트 시험중</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #f2f2f7;
+      font-family: 'Noto Sans KR', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    header {
+      background-color: #21325b;
+      color: #fff;
+      width: 100%;
+      text-align: center;
+      padding: 32px 0 20px 0;
+      box-shadow: 0 2px 8px rgba(33, 50, 91, 0.1);
+      margin-bottom: 24px;
+    }
+    h1 {
+      margin: 0;
+      letter-spacing: 2px;
+      font-weight: 900;
+      font-size: 2.3rem;
+    }
+    .test-card {
+      width: 95%;
+      max-width: 520px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(33, 50, 91, 0.07), 0 1.5px 5px rgba(33,50,91,0.02);
+      padding: 36px 35px 32px 35px;
+      box-sizing: border-box;
+      margin-bottom: 45px;
+      animation: fadein 0.7s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(30px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .question-number {
+      color: #4968ad;
+      font-size: 1.06rem;
+      font-weight: bold;
+      margin-bottom: 7px;
+      letter-spacing: 1px;
+    }
+    .question {
+      font-size: 1.15rem;
+      margin-bottom: 25px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #222b45;
+    }
+    .answers {
+      margin-bottom: 18px;
+    }
+    .answer-option {
+      display: block;
+      background: #eef3fd;
+      border: 2px solid #d8def7;
+      border-radius: 7px;
+      padding: 12px 17px;
+      margin-bottom: 11px;
+      cursor: pointer;
+      transition: all 0.18s;
+      position: relative;
+      font-size: 1.05rem;
+      color: #363f60;
+      user-select: none;
+    }
+    .answer-option.selected, .answer-option:hover {
+      background: #d5e1fb;
+      border-color: #6c92e2;
+    }
+    .answer-option input[type="radio"] {
+      display: none;
+    }
+    .next-btn, .restart-btn {
+      background: #223b7b;
+      color: #fff;
+      font-weight: 700;
+      padding: 12px 38px;
+      font-size: 1.07rem;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.11s;
+      margin-top: 10px;
+      box-shadow: 0 1.5px 5px rgba(33,50,91,0.05);
+    }
+    .next-btn:disabled {
+      background: #98a7ba;
+      cursor: not-allowed;
+    }
+    .restart-btn {
+      background: #3ace6d;
+      color: #fff;
+    }
+    .progress-bar {
+      margin-bottom: 27px;
+      height: 9px;
+      background: #e5eaf7;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .progress {
+      height: 100%;
+      background: linear-gradient(90deg, #2e4c8c, #6c92e2);
+      border-radius: 7px;
+      width: 0%;
+      transition: width 0.38s;
+    }
+    .result-summary {
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .result-title {
+      font-size: 1.26rem;
+      color: #223b7b;
+      margin-bottom: 14px;
+      font-weight: bold;
+    }
+    .result-total {
+      font-size: 1.17rem;
+      margin-bottom: 15px;
+    }
+    .result-desc {
+      font-size: 1rem;
+      color: #424e6d;
+      margin-bottom: 0px;
+      line-height: 1.5;
+    }
+    @media (max-width: 600px) {
+      .test-card { padding: 22px 8vw 19px 8vw;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>대표이사 테스트<br><span style="font-size:1.06rem;font-weight:500;letter-spacing:0;opacity:0.8;">(시험중)</span></h1>
+  </header>
+
+  <main>
+    <div class="test-card" id="test-card">
+      <div class="progress-bar" id="progress-bar"><div class="progress" id="progress"></div></div>
+      <div class="question-number" id="question-number"></div>
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <button class="next-btn" id="next-btn" disabled>다음</button>
+    </div>
+    <div class="test-card" id="result-card" style="display:none;">
+      <div class="result-summary">
+        <div class="result-title">대표이사 적합도 결과</div>
+        <div class="result-total" id="result-total"></div>
+        <div class="result-desc" id="result-desc"></div>
+        <button class="restart-btn" id="restart-btn">다시 시험 보기</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 대표이사 테스트 문항과 답변 및 점수 체계
+    const questions = [
+      {
+        q: "아침에 직원들이 조금 늦게 출근했다고 가정. 대표이사로서 당신은?",
+        options: [
+          { text: "배경 사정과 이유를 먼저 듣고, 다음부턴 시간 엄수에 대해 당부한다.", score: 3 },
+          { text: "바로 출근 시간 엄수를 강조하고 주의를 준다.", score: 2 },
+          { text: "팀장에게 대신 주의를 주도록 지시하고 넘어간다.", score: 1 },
+          { text: "별다른 조치 없이 알아서 하게 둔다.", score: 0 }
+        ]
+      },
+      {
+        q: "회사에 긴급 자금 위기 발생! 어떤 태도로 대처할 것인가?",
+        options: [
+          { text: "침착하게 전 임직원에게 상황을 공유하고, 솔루션을 투명하게 논의한다.", score: 3 },
+          { text: "경영진과만 비공개로 대책을 논의한다.", score: 2 },
+          { text: "자금 사정은 최대한 숨기고 조용히 수습하려 한다.", score: 1 },
+          { text: "최대한 외부에 알려지지 않게 혼자 고민한다.", score: 0 }
+        ]
+      },
+      {
+        q: "경쟁사가 직원 연봉을 올린다고 한다. 대표이사로서?",
+        options: [
+          { text: "업계 동향을 분석해, 회사 사정에 맞는 보상 방안 연구를 시작한다.", score: 3 },
+          { text: "당장 직원들에게도 연봉을 인상하겠다고 약속한다.", score: 2 },
+          { text: "당장 변화는 없다고 공지한다.", score: 1 },
+          { text: "직원들이 알아서 이직하지 않도록 기도한다.", score: 0 }
+        ]
+      },
+      {
+        q: "직원이 실수로 큰 거래를 놓쳤다. 당신의 선택은?",
+        options: [
+          { text: "실수 원인과 상황을 함께 돌아보고 재발방지책을 논의한다.", score: 3 },
+          { text: "책임자를 따로 불러 강하게 질책한다.", score: 2 },
+          { text: "해당 업무에서 직원의 역할을 줄인다.", score: 1 },
+          { text: "크게 신경 쓰지 않는다.", score: 0 }
+        ]
+      },
+      {
+        q: "회사의 핵심가치를 어떻게 직원들에게 전달할 것인가?",
+        options: [
+          { text: "구체적인 사례와 비전으로, 직접 소통하고 토론의 시간을 마련한다.", score: 3 },
+          { text: "이메일과 사내 게시판을 통해 안내한다.", score: 2 },
+          { text: "팀장들에게 일임한다.", score: 1 },
+          { text: "굳이 강조하지 않는다.", score: 0 }
+        ]
+      }
+    ];
+
+    // 결과 메시지
+    const resultMessages = [
+      {
+        min: 14,
+        msg: "대표이사 DNA<br><strong>당신은 뛰어난 리더십과 책임의식, 뛰어난 판단력을 겸비한, 대표이사로 <span style='color:#36b300'>완벽히 적합</span>한 인재입니다!<br>조직을 이끌며 <b>문제 해결</b>과 <b>소통</b>, <b>미래 비전</b> 마련에 적극적일 것입니다.</strong>"
+      },
+      {
+        min: 11,
+        msg: "잠재력 100%<br><strong>대표이사로도 손색없는 자질을 갖췄어요.<br>조금 더 과감한 결정력/소통 방식만 보완한다면 금상첨화!</strong>"
+      },
+      {
+        min: 7,
+        msg: "팀장형 인재<br><strong>대표이사 업무 스타일엔 약간의 개선이 필요합니다.<br>더 적극적으로 <b>소통</b>하고, <b>책임감</b>을 키워본다면<br>곧 리더십이 성장할 수 있어요!</strong>"
+      },
+      {
+        min: 0,
+        msg: "대표이사 스타일은 아님<br><strong>아직 인내, 책임, 소통, 적극성 등 대표이사에 요구되는 역량이 부족할 수 있어요.<br>현실에 안주말고 여러 경험을 쌓는다면 변화가 가능합니다. <br>챌린지를 응원합니다!</strong>"
+      }
+    ];
+
+    let currentQuestion = 0;
+    let selectedAnswers = Array(questions.length).fill(null);
+
+    // DOM Elements
+    const testCard = document.getElementById('test-card');
+    const questionNumberEl = document.getElementById('question-number');
+    const questionEl = document.getElementById('question');
+    const answersEl = document.getElementById('answers');
+    const nextBtn = document.getElementById('next-btn');
+    const progressBar = document.getElementById('progress');
+    const resultCard = document.getElementById('result-card');
+    const resultTotal = document.getElementById('result-total');
+    const resultDesc = document.getElementById('result-desc');
+    const restartBtn = document.getElementById('restart-btn');
+
+    function renderQuestion(idx) {
+      // 1-based display
+      questionNumberEl.textContent = `문제 ${idx+1} / ${questions.length}`;
+      questionEl.textContent = questions[idx].q;
+      answersEl.innerHTML = "";
+      questions[idx].options.forEach((option, i) => {
+        const div = document.createElement('label');
+        div.className = "answer-option" + (selectedAnswers[idx]===i ? " selected" : "");
+        div.tabIndex = 0;
+        div.innerHTML = `
+          <input type="radio" name="answer" value="${i}" ${selectedAnswers[idx]===i?"checked":""} />
+          ${option.text}
+        `;
+        div.addEventListener('click', () => selectAnswer(i));
+        div.addEventListener('keydown', e =>{
+          if(e.key === "Enter" || e.key===" ") {
+            selectAnswer(i);
+          }
+        });
+        answersEl.appendChild(div);
+      });
+      nextBtn.disabled = selectedAnswers[idx] === null;
+      updateProgressBar();
+    }
+
+    function selectAnswer(i) {
+      selectedAnswers[currentQuestion] = i;
+      Array.from(answersEl.children).forEach((el, idx) => {
+        el.classList.toggle("selected", idx === i);
+      });
+      nextBtn.disabled = false;
+    }
+
+    function updateProgressBar() {
+      const percent = ((currentQuestion)/questions.length)*100;
+      progressBar.style.width = `${percent}%`;
+    }
+
+    function toResult() {
+      const total = selectedAnswers.reduce((sum, ansIdx, q) => {
+        if(ansIdx===null) return sum;
+        return sum + questions[q].options[ansIdx].score;
+      }, 0);
+
+      resultTotal.innerHTML = `총점: <b>${total}점</b> / ${questions.length*3}점`;
+      let desc = resultMessages.find(r => total >= r.min).msg;
+      resultDesc.innerHTML = desc;
+
+      testCard.style.display = "none";
+      resultCard.style.display = "block";
+    }
+
+    function nextStep() {
+      if(selectedAnswers[currentQuestion]===null) return;
+      if(currentQuestion < questions.length-1) {
+        currentQuestion++;
+        renderQuestion(currentQuestion);
+        // If revisit, maintain scroll
+        window.scrollTo({top: testCard.offsetTop-22, behavior:'smooth'});
+      } else {
+        updateProgressBar();
+        progressBar.style.width = "100%";
+        setTimeout(toResult, 400);
+      }
+    }
+
+    function restartTest() {
+      currentQuestion = 0;
+      selectedAnswers = Array(questions.length).fill(null);
+      resultCard.style.display = "none";
+      testCard.style.display = "block";
+      renderQuestion(currentQuestion);
+      updateProgressBar();
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+
+    nextBtn.addEventListener('click', nextStep);
+    restartBtn.addEventListener('click', restartTest);
+
+    // 키보드로 next 지원
+    document.addEventListener('keydown', function(e) {
+      if(testCard.style.display!=="none" && (e.key==="Enter" || e.key===" ")){
+        if(!nextBtn.disabled) {
+          e.preventDefault();
+          nextStep();
+        }
+      }
+    });
+
+    // 첫화면 렌더
+    renderQuestion(currentQuestion);
+  </script>
+</body>
+</html>
