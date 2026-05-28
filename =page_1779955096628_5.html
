@@ -1,0 +1,598 @@
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>무인 카페 키오스크</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Pretendard', Arial, sans-serif;
+      background: #f6f6f6;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #2A3B4C;
+      color: #fff;
+      padding: 20px 0 10px 0;
+      text-align: center;
+      letter-spacing: 1.5px;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+    header span {
+      font-size: 1.1rem;
+      display: block;
+      margin-top: 2px;
+      color: #e0e0e0;
+      font-weight: 300;
+    }
+    #main {
+      max-width: 480px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 32px 22px 32px 22px;
+      box-shadow: 0 4px 32px rgba(70,70,90,0.13);
+    }
+    h2 {
+      margin: 0 0 18px 0;
+      font-size: 1.3rem;
+      color: #193245;
+      letter-spacing: 1px;
+    }
+    .menu-section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      justify-content: space-between;
+    }
+    .menu-item {
+      background: #f2f8fc;
+      padding: 15px;
+      border-radius: 14px;
+      width: 46%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 1px 5px #a8b9c433;
+      transition: box-shadow 0.13s;
+      cursor: pointer;
+      position: relative;
+    }
+    .menu-item.selected {
+      background: #dcefff;
+      box-shadow: 0 1px 12px #65a0e655;
+      outline: 2.5px solid #1581e6;
+    }
+    .menu-item img {
+      width: 56px;
+      height: 56px;
+      margin-bottom: 6px;
+      border-radius: 8px;
+      object-fit: cover;
+    }
+    .menu-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 1px;
+      color: #233857;
+    }
+    .menu-price {
+      font-size: 0.97em;
+      color: #4692CE;
+      margin-bottom: 3px;
+    }
+    .menu-desc {
+      font-size: 0.9rem;
+      color: #657187;
+      text-align: center;
+      margin-bottom: 0;
+      min-height: 1em;
+    }
+    .qty-btns {
+      display: flex;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .qty-btns button {
+      border: none;
+      background: #edeeee;
+      color: #1b375a;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 1.15em;
+      font-weight: 700;
+      cursor: pointer;
+      margin: 0 7px;
+      transition: background 0.1s;
+    }
+    .qty-btns span {
+      font-size: 1.07em;
+      min-width: 16px;
+      text-align: center;
+      color: #213f6c;
+      font-weight: 500;
+    }
+    .option-section {
+      margin: 18px 0 16px 0;
+    }
+    .option-group {
+      display: flex;
+      gap: 17px;
+      margin-bottom: 11px;
+    }
+    .option-label {
+      font-size: 1em;
+      color: #1f304f;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: block;
+      margin-left: 3px;
+    }
+    .option-btn {
+      border: 1.5px solid #b5c5db;
+      background: #fff;
+      color: #2a4870;
+      border-radius: 20px;
+      padding: 5px 18px;
+      font-size: 0.98em;
+      cursor: pointer;
+      transition: background 0.15s, border 0.15s;
+    }
+    .option-btn.selected {
+      border: 2px solid #1581e6;
+      background: #e8f2fb;
+      color: #1581e6;
+    }
+    #order-summary {
+      background: #f6f9ff;
+      border-radius: 14px;
+      padding: 17px 12px 12px 12px;
+      box-shadow: 0 1px 8px #b1c7d244;
+      margin-bottom: 17px;
+      display: none;
+    }
+    #order-summary.show {
+      display: block;
+      animation: fadein 0.2s;
+    }
+    @keyframes fadein { from { opacity: 0 } to { opacity: 1 } }
+    #order-list {
+      font-size: 1rem;
+      color: #2d3447;
+      margin-bottom: 5px;
+    }
+    #order-total {
+      font-weight: 700;
+      color: #1569ae;
+      font-size: 1.07rem;
+      float: right;
+      margin-right: 2vw;
+    }
+    #clear-order {
+      border: none;
+      background: #f1cfcf;
+      color: #983838;
+      border-radius: 8px;
+      padding: 5px 13px;
+      margin-top: 7px;
+      font-size: 0.98em;
+      cursor: pointer;
+      float: left;
+      transition: background 0.12s;
+    }
+    #clear-order:hover {
+      background: #e99;
+    }
+    #order-btn {
+      width: 100%;
+      background: #3498e5;
+      color: #fff;
+      font-size: 1.17em;
+      border: none;
+      border-radius: 10px;
+      padding: 15px 0;
+      font-weight: 900;
+      cursor: pointer;
+      margin: 10px 0 0 0;
+      box-shadow: 0 1px 10px #2376b255;
+      transition: background 0.13s;
+    }
+    #order-btn:disabled {
+      background: #b5d1e7;
+      color: #dfeefa;
+      cursor: not-allowed;
+    }
+    #order-finish {
+      display: none;
+      background: #ebffed;
+      text-align: center;
+      border-radius: 10px;
+      padding: 20px 10px;
+      font-size: 1.12rem;
+      font-weight: 600;
+      color: #28a633;
+      margin-top: 15px;
+    }
+    .loading {
+      display: none;
+      justify-content: center;
+      align-items: center;
+      margin-top: 16px;
+      margin-bottom: 10px;
+    }
+    .loading.show {
+      display: flex;
+    }
+    .dot {
+      height: 11px;
+      width: 11px;
+      margin: 0 3px;
+      border-radius: 50%;
+      display: inline-block;
+      background: #41a3e2;
+      animation: dotFlash 1.1s infinite;
+    }
+    .dot2 { animation-delay: 0.2s; }
+    .dot3 { animation-delay: 0.4s; }
+    @keyframes dotFlash {
+      0%, 80%, 100% { opacity: .2; }
+      40% { opacity: 1; }
+    }
+    @media (max-width: 548px) {
+      #main {
+        max-width: 99vw;
+        margin: 10vw 2vw;
+        padding: 6vw 3vw;
+      }
+      .menu-item { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>무인 카페 키오스크</h1>
+    <span>주문 대기시간 50%↓! 스마트한 직장인 카페</span>
+  </header>
+  <div id="main">
+    <h2>메뉴 선택</h2>
+    <div class="menu-section" id="menu-section">
+      <!-- JS로 메뉴 생성 -->
+    </div>
+    <div class="option-section" id="option-section" style="display:none;">
+      <div>
+        <span class="option-label">사이즈</span>
+        <div class="option-group" id="size-options">
+          <button class="option-btn" data-option="Tall">Tall</button>
+          <button class="option-btn" data-option="Grande">Grande</button>
+          <button class="option-btn" data-option="Venti">Venti</button>
+        </div>
+      </div>
+      <div>
+        <span class="option-label">샷 추가</span>
+        <div class="option-group" id="shot-options">
+          <button class="option-btn" data-option="샷없음">없음</button>
+          <button class="option-btn" data-option="한샷">1샷(+500)</button>
+          <button class="option-btn" data-option="두샷">2샷(+1000)</button>
+        </div>
+      </div>
+      <div>
+        <span class="option-label">얼음</span>
+        <div class="option-group" id="ice-options">
+          <button class="option-btn" data-option="적게">적게</button>
+          <button class="option-btn" data-option="보통">보통</button>
+          <button class="option-btn" data-option="많이">많이</button>
+        </div>
+      </div>
+    </div>
+    <div id="order-summary">
+      <div id="order-list"></div>
+      <div>
+        <button id="clear-order">초기화</button>
+        <span id="order-total"></span>
+        <div style="clear:both;"></div>
+      </div>
+    </div>
+    <button id="order-btn" disabled>주문하기</button>
+    <div class="loading" id="loading">
+      <span class="dot"></span>
+      <span class="dot dot2"></span>
+      <span class="dot dot3"></span>
+    </div>
+    <div id="order-finish"></div>
+  </div>
+  <script>
+  // 메뉴 DB(예시)
+  const menuList = [
+    {
+      id: 'caffe_americano',
+      name: "카페 아메리카노",
+      price: 2500,
+      desc: "든든한 직장인 필수템, 진한 에스프레소",
+      img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      id: 'cappuccino',
+      name: "카푸치노",
+      price: 3200,
+      desc: "부드러운 우유거품에 진한 커피향",
+      img: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      id: 'vanilla_latte',
+      name: "바닐라라떼",
+      price: 3700,
+      desc: "바닐라향 가득 달콤하고 부드럽게",
+      img: "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      id: 'coldbrew',
+      name: "콜드브루",
+      price: 4000,
+      desc: "시원하고 깔끔한 원두 풍미",
+      img: "https://images.unsplash.com/photo-1481391032119-d9c1ecb61058?auto=format&fit=crop&w=400&q=80"
+    },
+    {
+      id: 'choco_latte',
+      name: "초코라떼",
+      price: 3300,
+      desc: "달콤함에 지친 마음 힐링을!",
+      img: "https://images.unsplash.com/photo-1502741338009-cac2772e18bc?auto=format&fit=crop&w=400&q=80"
+    }
+  ];
+
+  // 옵션 Default & 가격
+  const sizeDiff = {
+    'Tall': 0, 'Grande': 500, 'Venti': 1000
+  };
+  const shotDiff = {
+    '샷없음': 0, '한샷': 500, '두샷': 1000
+  };
+
+  // 동적상태
+  let selectedMenuId = null;
+  let selectedMenuQty = 1;
+  let selectedOptions = {
+    size: "Tall",
+    shot: "샷없음",
+    ice: "보통"
+  };
+  let order = []; // [{menuId, name, qty, options, price, ...}]
+
+  // DOM
+  const menuSection = document.getElementById('menu-section');
+  const optionSection = document.getElementById('option-section');
+  const orderSummary = document.getElementById('order-summary');
+  const orderListEl = document.getElementById('order-list');
+  const orderTotal = document.getElementById('order-total');
+  const orderBtn = document.getElementById('order-btn');
+  const clearBtn = document.getElementById('clear-order');
+  const orderFinish = document.getElementById('order-finish');
+  const loading = document.getElementById('loading');
+
+  // 메뉴 렌더링
+  menuList.forEach((menu, idx) => {
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    div.innerHTML = `
+      <img src="${menu.img}" alt="${menu.name}">
+      <div class="menu-title">${menu.name}</div>
+      <div class="menu-price">${menu.price.toLocaleString()}원</div>
+      <div class="menu-desc">${menu.desc || ''}</div>
+      <div class="qty-btns">
+        <button class="qty-btn" data-type="minus" aria-label="수량감소">-</button>
+        <span class="qty-num">1</span>
+        <button class="qty-btn" data-type="plus" aria-label="수량증가">+</button>
+      </div>
+    `;
+    div.onclick = (e) => {
+      if(!e.target.classList.contains('qty-btn')) {
+        selectMenu(menu.id, div);
+      }
+    };
+    // 수량 버튼
+    div.querySelectorAll('.qty-btn').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        if(div.classList.contains('selected')) {
+          // 현재 선택메뉴에만 반응
+          const type = btn.getAttribute('data-type');
+          if(type==='minus') {
+            if(selectedMenuQty > 1) {
+              selectedMenuQty -= 1;
+              div.querySelector('.qty-num').textContent = selectedMenuQty;
+            }
+          }else{
+            if(selectedMenuQty < 10) {
+              selectedMenuQty += 1;
+              div.querySelector('.qty-num').textContent = selectedMenuQty;
+            }
+          }
+        }
+      }
+    });
+    menuSection.appendChild(div);
+  });
+
+  // 메뉴 선택
+  function selectMenu(menuId, domEl) {
+    if(selectedMenuId!==menuId){
+      // 기존선택 해제 및 새 set
+      document.querySelectorAll('.menu-item').forEach(item=>item.classList.remove('selected'));
+      domEl.classList.add('selected');
+      selectedMenuId = menuId;
+      selectedMenuQty = 1;
+      domEl.querySelector('.qty-num').textContent = '1';
+      // 옵션 초기화
+      selectedOptions = {size:'Tall', shot:'샷없음', ice:'보통'};
+      setDefaultOptions();
+      optionSection.style.display = '';
+    }
+  }
+  // 옵션 초기 값 세팅
+  function setDefaultOptions() {
+    document.querySelectorAll('#size-options .option-btn').forEach(btn=>{
+      btn.classList.remove('selected');
+      if(btn.dataset.option === selectedOptions.size) btn.classList.add('selected');
+    });
+    document.querySelectorAll('#shot-options .option-btn').forEach(btn=>{
+      btn.classList.remove('selected');
+      if(btn.dataset.option === selectedOptions.shot) btn.classList.add('selected');
+    });
+    document.querySelectorAll('#ice-options .option-btn').forEach(btn=>{
+      btn.classList.remove('selected');
+      if(btn.dataset.option === selectedOptions.ice) btn.classList.add('selected');
+    });
+  }
+  // 옵션 버튼 클릭
+  ['size','shot','ice'].forEach(key=>{
+    document.querySelectorAll(`#${key}-options .option-btn`).forEach(btn=>{
+      btn.onclick = function() {
+        document.querySelectorAll(`#${key}-options .option-btn`).forEach(b=>b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedOptions[key] = btn.dataset.option;
+      }
+    });
+  });
+
+  // 주문 추가 & 표시
+  optionSection.addEventListener('dblclick', addMenuToOrder);
+  optionSection.addEventListener('touchend',(e)=>{ if(e.touches.length==0){ addMenuToOrder() } });
+  // 또는 아래 버튼으로 추가
+  menuSection.addEventListener('dblclick', addMenuToOrder);
+  menuSection.addEventListener('touchend',(e)=>{ if(e.touches.length==0&&selectedMenuId){ addMenuToOrder() } });
+
+  function addMenuToOrder() {
+    if(!selectedMenuId) return;
+    // 중복 옵션+메뉴 찾기
+    const optionsKey = JSON.stringify(selectedOptions);
+    let exist = order.find(item => 
+      item.menuId===selectedMenuId && JSON.stringify(item.options)===optionsKey
+    );
+    let menu = menuList.find(m=>m.id===selectedMenuId);
+    let price = 
+      (menu.price + sizeDiff[selectedOptions.size] + shotDiff[selectedOptions.shot]);
+    if(exist) {
+      // 이미 있으면 수량만 가산
+      exist.qty += selectedMenuQty;
+    } else {
+      order.push({
+        menuId: selectedMenuId,
+        name: menu.name,
+        qty: selectedMenuQty,
+        options: {...selectedOptions},
+        price: price
+      });
+    }
+    renderOrder();
+    selectedMenuId = null; // 선택 초기화
+    document.querySelectorAll('.menu-item').forEach(item=>item.classList.remove('selected'));
+    optionSection.style.display = 'none';
+  }
+
+  // 주문내역 렌더링
+  function renderOrder() {
+    if(order.length===0) {
+      orderSummary.classList.remove('show');
+      orderBtn.disabled = true;
+      return;
+    }
+    orderSummary.classList.add('show');
+    orderBtn.disabled = false;
+    orderListEl.innerHTML = '';
+    let total = 0;
+    order.forEach((item, idx) => {
+      let opts = [
+        item.options.size, 
+        item.options.shot!=='샷없음' ? item.options.shot : '',
+        item.options.ice!=='보통' ? ('얼음'+item.options.ice) : ''
+      ].filter(Boolean).join(', ');
+      let optInfo = opts ? ` <span style="color:#6fa7e2;font-size:0.91em;">(${opts})</span>` : '';
+      let optPrice = (item.price*item.qty).toLocaleString();
+      total += item.price*item.qty;
+
+      let row = document.createElement('div');
+      row.innerHTML = `
+        <b>${item.name}</b> 
+        <span style="font-size:0.98em;">×${item.qty}</span>
+        ${optInfo}
+        <span style="float:right; color:#175493; font-weight:600">${optPrice}원</span>
+        <button class="del-item" data-idx="${idx}" aria-label="삭제" style="float:right; margin-right:6px; background:#e7e7e7;color:#d21919; border:none; border-radius:5px; padding:1px 7px; font-size:0.94em; cursor:pointer;">✕</button>
+        <div style="clear:both; height:2px"></div>
+      `;
+      orderListEl.appendChild(row);
+    });
+    orderTotal.textContent = `총 ${total.toLocaleString()}원`;
+  }
+
+  // 주문품목 삭제
+  orderListEl.onclick = e => {
+    if(e.target.classList.contains('del-item')) {
+      let idx = +e.target.dataset.idx;
+      order.splice(idx,1);
+      renderOrder();
+    }
+  };
+  clearBtn.onclick = ()=>{ order=[]; renderOrder(); };
+
+  // 주문 버튼
+  orderBtn.onclick = function() {
+    orderBtn.disabled = true;
+    loading.classList.add('show');
+    setTimeout(()=>{
+      loading.classList.remove('show');
+      orderFinish.style.display = 'block';
+      orderFinish.innerHTML = `
+        <div>주문이 정상 접수되었습니다!<br>
+        <span style="color:#197be7;">픽업번호: <b>${makePickupNum()}</b></span><br>
+        대기시간이 약 <b>50%</b> 단축되었습니다 🙂
+        </div>
+      `;
+      order = [];
+      renderOrder();
+      setTimeout(()=>{
+        orderFinish.style.display = 'none';
+      },4000);
+    }, 1200); // 주문 처리 속도
+  };
+
+  // 주문번호 발급
+  function makePickupNum() {
+    return Math.floor(Math.random()*900+100);
+  }
+
+  // UX: 저장된 임시 주문 복귀(로컬 저장)
+  window.addEventListener('beforeunload', () => {
+    if(order.length>0)
+      localStorage.setItem('kiosk_order',JSON.stringify(order));
+    else
+      localStorage.removeItem('kiosk_order');
+  });
+  window.addEventListener('DOMContentLoaded', () => {
+    let stored = localStorage.getItem('kiosk_order');
+    if(stored) {
+      order = JSON.parse(stored);
+      renderOrder();
+    }
+  });
+
+  // UX: Enter로 옵션 선택시 주문추가
+  document.addEventListener('keydown', function(e){
+    if(optionSection.style.display!=='none' && (e.key=='Enter'||e.key=='n')) {
+      addMenuToOrder();
+    }
+  });
+
+  // 안내 : 스마트 주문 UX
+  // 1. 메뉴 & 옵션 더블클릭/터치엔드 시 바로 장바구니에 담김
+  // 2. 최근 주문내역은 새로고침에도 복구
+  // 3. 옵션을 빠르게 선택 : 옵션 탭에서만 더블클릭(PC), 터치(모바일) 지원
+  </script>
+</body>
+</html>
