@@ -1,0 +1,279 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>전통 한식당 메뉴판</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700&display=swap');
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80') center center/cover no-repeat, #efe5dc;
+      min-height: 100%;
+      font-family: 'Nanum Myeongjo', serif;
+      color: #56351e;
+      box-sizing: border-box;
+    }
+    .container {
+      max-width: 600px;
+      background: rgba(255,255,255,0.92);
+      margin: 40px auto;
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(68,42,20,0.16);
+      padding: 32px 24px 24px 24px;
+      position: relative;
+    }
+    h1 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 2.6rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+      color: #845025;
+      text-align: center;
+    }
+    .divider {
+      border-top: 2px solid #dec9b8;
+      margin: 18px 0;
+      width: 80%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .subtitle {
+      font-size: 1.25rem;
+      color: #af6a39;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    .menu-section {
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+    }
+    ul.menu-list {
+      list-style: none;
+      padding: 0;
+    }
+    li.menu-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin: 12px 0;
+      padding-bottom: 7px;
+      border-bottom: 1px solid #eee1d4;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-name {
+      font-size: 1.13rem;
+      font-weight: 700;
+      color: #654021;
+    }
+    .item-desc {
+      font-size: 0.94rem;
+      color: #927a5f;
+      margin-top: 2px;
+    }
+    .item-price {
+      font-size: 1.07rem;
+      color: #a4743e;
+      font-weight: 700;
+      margin-left: 20px;
+      min-width: 64px;
+      text-align: right;
+      white-space: nowrap;
+    }
+    .menu-list li:last-child {
+      border-bottom: none;
+    }
+    .footer {
+      text-align: center;
+      font-size: 0.98rem;
+      color: #8d6c53;
+      margin-top: 30px;
+      letter-spacing: 0.04em;
+    }
+    /* 반응형 */
+    @media (max-width: 750px) {
+      .container {
+        max-width: 96vw;
+        padding: 18px 4vw 16px 4vw;
+      }
+      h1 {
+        font-size: 2.05rem;
+      }
+    }
+    @media (max-width: 480px) {
+      .item-name {
+        font-size: 1rem;
+      }
+      .item-price {
+        font-size: 0.95rem;
+        min-width: 48px;
+      }
+      .menu-section {
+        margin-bottom: 18px;
+      }
+      .container {
+        padding: 12px 2vw 8px 2vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>한식당<br>메뉴판</h1>
+    <div class="divider"></div>
+    <div class="subtitle">대표 메뉴</div>
+    <div class="menu-section" id="signature-menus">
+      <ul class="menu-list" id="signature-list">
+        <!-- JavaScript로 채워짐 -->
+      </ul>
+    </div>
+    <div class="divider"></div>
+    <div class="subtitle">식사류</div>
+    <div class="menu-section" id="meal-menus">
+      <ul class="menu-list" id="meal-list">
+      </ul>
+    </div>
+    <div class="divider"></div>
+    <div class="subtitle">안주류</div>
+    <div class="menu-section" id="side-menus">
+      <ul class="menu-list" id="side-list">
+      </ul>
+    </div>
+    <div class="divider"></div>
+    <div class="subtitle">음료 및 주류</div>
+    <div class="menu-section" id="drink-menus">
+      <ul class="menu-list" id="drink-list">
+      </ul>
+    </div>
+    <div class="footer">
+      <span>어서오세요! 전통의 맛과 정성으로 모십니다.</span>
+    </div>
+  </div>
+  <script>
+    // 메뉴 데이터
+    const menus = {
+      signature: [
+        {
+          name: "불고기 정식",
+          desc: "달콤하고 부드러운 소불고기와 반찬 가득한 한상",
+          price: "15,000원"
+        },
+        {
+          name: "비빔밥",
+          desc: "다양한 나물과 고명을 쓱쓱 비벼먹는 대표 한식",
+          price: "10,000원"
+        },
+        {
+          name: "삼계탕",
+          desc: "국산 닭에 인삼, 찹쌀 등 재료를 넣어 푹 끓인 보양식",
+          price: "14,000원"
+        }
+      ],
+      meal: [
+        {
+          name: "돌솥비빔밥",
+          desc: "뜨거운 돌솥에 고소한 비빔밥과 구수한 누룽지 서비스",
+          price: "11,000원"
+        },
+        {
+          name: "된장찌개",
+          desc: "된장의 깊은 맛, 고기와 채소 가득한 찌개",
+          price: "8,000원"
+        },
+        {
+          name: "김치찌개",
+          desc: "묵은지와 돼지고기가 어우러진 칼칼한 찌개",
+          price: "8,500원"
+        },
+        {
+          name: "순두부찌개",
+          desc: "부드러운 순두부에 얼큰한 국물이 일품",
+          price: "9,000원"
+        },
+        {
+          name: "갈비탕",
+          desc: "진하게 우려낸 소갈비 국물과 고기, 당면",
+          price: "13,000원"
+        },
+        {
+          name: "오징어덮밥",
+          desc: "매콤달콤한 오징어볶음을 얹은 밥",
+          price: "9,000원"
+        }
+      ],
+      side: [
+        {
+          name: "파전",
+          desc: "쫄깃한 밀가루 반죽에 파가 듬뿍 들어간 전",
+          price: "13,000원"
+        },
+        {
+          name: "해물파전",
+          desc: "통통한 해물과 파의 환상적인 조화",
+          price: "15,000원"
+        },
+        {
+          name: "도토리묵 무침",
+          desc: "쫄깃쫄깃 담백한 도토리묵과 채소 무침",
+          price: "9,000원"
+        },
+        {
+          name: "잡채",
+          desc: "당면과 고기, 야채가 어우러진 대표 안주",
+          price: "12,000원"
+        }
+      ],
+      drink: [
+        {
+          name: "막걸리",
+          desc: "전통 누룩으로 만든 구수하고 부드러운 전통주 (750ml)",
+          price: "5,000원"
+        },
+        {
+          name: "소주",
+          desc: "한국 대표 증류주, 깊은 맛과 도수 (360ml)",
+          price: "5,000원"
+        },
+        {
+          name: "청하",
+          desc: "깔끔하고 산뜻한 맛의 청주 (300ml)",
+          price: "7,000원"
+        },
+        {
+          name: "콜라 / 사이다",
+          desc: "탄산음료 (캔)",
+          price: "2,000원"
+        }
+      ]
+    };
+
+    // 메뉴 출력 함수
+    function displayMenu(sectionId, list) {
+      const ul = document.getElementById(sectionId);
+      ul.innerHTML = '';
+      list.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'menu-item';
+        li.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-desc">${item.desc}</div>
+          </div>
+          <div class="item-price">${item.price}</div>
+        `;
+        ul.appendChild(li);
+      });
+    }
+
+    // 각 섹션에 메뉴 정보 추가
+    displayMenu('signature-list', menus.signature);
+    displayMenu('meal-list', menus.meal);
+    displayMenu('side-list', menus.side);
+    displayMenu('drink-list', menus.drink);
+  </script>
+</body>
+</html>
